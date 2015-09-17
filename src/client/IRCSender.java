@@ -26,22 +26,22 @@ public class IRCSender extends IRCEventAdapter {
 	// }
 
 	// /**
-	// * A normal user uses the OPER command to obtain operator privileges.
-	// *
-	// * @param name
-	// * Name of the user.
-	// * @param password
-	// * Password of the user.
-	// * @throws IRCException
-	// * @throws {@link IllegalArgumentException} If any of the arguments is
-	// null.
-	// */
-	// public void oper(String name, String password) throws IRCException {
-	// if (name == null || password == null) {
-	// throw new IllegalArgumentException();
-	// }
-	// String message = String.format(OPER_COMMAND, name, password);
-	// send(message);
+//	 * A normal user uses the OPER command to obtain operator privileges.
+//	 *
+//	 * @param name
+//	 * Name of the user.
+//	 * @param password
+//	 * Password of the user.
+//	 * @throws IRCException
+//	 * @throws {@link IllegalArgumentException} If any of the arguments is
+//	 null.
+//	 */
+//	 public void oper(String name, String password) throws IRCException {
+//	 if (name == null || password == null) {
+//	 throw new IllegalArgumentException();
+//	 }
+//	 String message = String.format(OPER_COMMAND, name, password);
+//	 send(message);
 	// }
 	//
 	// // TODO : Extra params for channel's mode
@@ -296,11 +296,11 @@ public class IRCSender extends IRCEventAdapter {
 					- bytesRead);
 			buffer.put(byteArr, bytesRead, bytesToBeRead);
 			bytesRead += bytesToBeRead;
-			System.out.println("SENDING: " + new String(buffer.array()));
 			buffer.flip();
 			if (bytesRead < message.length()) {
 				buffer.compact();
 			}
+			System.out.println("SENDING: " + new String(buffer.array()));
 			channel.write(buffer);
 		}
 		while (buffer.hasRemaining()) {

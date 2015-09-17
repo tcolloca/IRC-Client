@@ -8,18 +8,20 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.nio.channels.UnsupportedAddressTypeException;
 
-import parser.IRCMessage;
-import parser.IRCParser;
-import util.IRCFrameworkErrorException;
 import command.IRCCommand;
 import command.IRCCommandFactory;
 import command.InvalidCommandException;
+import command.JoinCommand;
+import command.NamesCommand;
 import command.NickCommand;
 import command.PassCommand;
 import command.PongCommand;
 import command.UserCommand;
 import event.IRCEventAdapter;
 import event.IRCEventBroadcaster;
+import parser.IRCMessage;
+import parser.IRCParser;
+import util.IRCFrameworkErrorException;
 
 /**
  * The main class of the IRC Connection framework.
@@ -30,10 +32,10 @@ public class IRCClient extends IRCEventAdapter {
 
 	private static final boolean SEND_PASS = false;
 	private static final String PASSWORD = "tomas123";
-	private static final String NICKNAME = "Tommmm";
+	private static final String NICKNAME = "niiiiickname";
 	private static final String USERNAME = "Tommmm";
 	private static final String REALNAME = "Tommmm";
-	//private static final String CHANNEL = "#guiamt";
+	private static final String CHANNEL = "#guiamt";
 
 	private IRCReader reader;
 	private IRCSender sender;
@@ -120,8 +122,11 @@ public class IRCClient extends IRCEventAdapter {
 		if (channel.isConnected()) {
 			throw new IllegalStateException();
 		}
+		System.out.println("Connecting to server and port...");
 		channel.connect(new InetSocketAddress(server, port));
+		System.out.println("Connected to server and port.");
 		while (!channel.finishConnect()) {
+			System.out.println("Trying to connect...");
 		}
 		broadcaster.onConnect();
 	}
@@ -137,27 +142,41 @@ public class IRCClient extends IRCEventAdapter {
 	@Override
 	public void onConnect() {
 		try {
-		if (SEND_PASS) {
-			sendCommand(new PassCommand(PASSWORD));
+			if (SEND_PASS) {
+				sendCommand(new PassCommand(PASSWORD));
+			}
+			sendCommand(new NickCommand(NICKNAME));
+			sendCommand(new UserCommand(USERNAME, REALNAME));
+		} catch (InvalidCommandException e) {
+			throw new IRCFrameworkErrorException();
 		}
-		sendCommand(new NickCommand(NICKNAME));
-		sendCommand(new UserCommand(USERNAME, REALNAME));
+	}
+
+	@Override
+	public void onPing(String server) {
+		try {
+			sendCommand(new PongCommand(server));
+		} catch (InvalidCommandException e) {
+			throw new IRCFrameworkErrorException();
+		}
+		try {
+			sendCommand(new JoinCommand(CHANNEL, PASSWORD));
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
 	}
 	
-	 @Override
-	 public void onPing(String server) {
-		 try {
-			sendCommand(new PongCommand(server));
+	@Override
+	public void onNotice(String msgtarget, String message) {
+		try {
+			System.out.println("Names sending");
+			sendCommand(new NamesCommand());
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
-	 }
+	}
 
-	public static void main(String[] args) throws IOException, IRCException,
-			InterruptedException {
+	public static void main(String[] args) throws IOException, IRCException, InterruptedException {
 		IRCClient client = new IRCClient();
 		client.run("irc.mibbit.net", 6667);
 	}

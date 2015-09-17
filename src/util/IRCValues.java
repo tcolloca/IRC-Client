@@ -9,8 +9,10 @@ public interface IRCValues {
 	public static final char USER_INDICATOR = '!';
 	public static final char HOST_INDICATOR = '@';
 	public static final char TRAILING_INDICATOR = ':';
+	public static final char IN_PARAM_SEPARATOR = ',';
 	
 	public static final String UNUSED = "*";
+	public static final String ZERO = "0";
 	
 	public static final String PASS_COMMAND = "PASS";
 	public static final String NICK_COMMAND = "NICK";
@@ -27,6 +29,8 @@ public interface IRCValues {
 	
 	public static final String NOTICE_COMMAND = "NOTICE";
 	public static final String PING_COMMAND = "PING";
+	
+	public static final String NAMES_COMMAND = "NAMES";
 	
 	//
 	// private static final String NOTICE_AUTH_COMMAND = "NOTICE AUTH";
