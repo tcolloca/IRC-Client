@@ -1,70 +1,19 @@
 package parser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import util.IRCValues;
-
 /**
  * Represents a message of IRC according to the BNF representation specified in
  * the RFC 1459.
  * 
  * @author Tomas
  */
-public class IRCMessage implements IRCValues {
-
-	private IRCPrefix prefix;
-	private String command;
-	private IRCParameters params;
-
-	/**
-	 * @param command
-	 * @throws IllegalArgumentException
-	 *             If command is null.
-	 */
-	public IRCMessage(String command) {
-		this(command, new ArrayList<String>());
-	}
-
-	/**
-	 * @param command
-	 * @param parameters
-	 * @throws IllegalArgumentException
-	 *             If command or parameters is null.
-	 */
-	public IRCMessage(String command, String... parameters) {
-		this(command);
-		setParameters(parameters);
-	}
-
-	/**
-	 * @param command
-	 * @param parameters
-	 * @throws IllegalArgumentException
-	 *             If command is null.
-	 */
-	public IRCMessage(String command, List<String> parameters) {
-		this.command = command;
-		if (parameters != null) {
-			this.params = new IRCParameters(parameters);
-		}
-	}
-
-	IRCMessage() {
-	}
+public interface IRCMessage {
 
 	/**
 	 * @param parameters
 	 * @throws IllegalArgumentException
 	 *             If parameters is null.
 	 */
-	public void setParameters(String... parameters) {
-		if (parameters == null) {
-			throw new IllegalArgumentException();
-		}
-		this.params = new IRCParameters(Arrays.asList(parameters));
-	}
+	public void setParameters(String... parameters);
 
 	/**
 	 * Returns the parameter in the index position (starting from 0), or null if
@@ -74,57 +23,47 @@ public class IRCMessage implements IRCValues {
 	 * @return the parameter in the index position (starting from 0), or null if
 	 *         there is no parameter in such position.
 	 */
-	public String getParameter(int index) {
-		return params != null ? params.getParameter(index) : null;
-	}
+	public String getParameter(int index);
 
 	/**
 	 * Returns the amount of parameters.
 	 * 
 	 * @return the amount of parameters.
 	 */
-	public int amountOfParameters() {
-		return params != null ? params.amountOfParameters() : 0;
-	}
+	public int amountOfParameters();
 
-	public boolean hasPrefix() {
-		return prefix != null;
-	}
+	/**
+	 * Returns true if it has a prefix.
+	 * 
+	 * @return true if it has a prefix.
+	 */
+	public boolean hasPrefix();
 
-	public IRCPrefix getPrefix() {
-		return prefix;
-	}
+	/**
+	 * Returns the IRCPrefix of the message. Null if it has none.
+	 * 
+	 * @return the IRCPrefix of the message. Null if it has none.
+	 */
+	public IRCPrefix getPrefix();
 
-	public String getCommand() {
-		return command;
-	}
+	/**
+	 * Returns the command of the message.
+	 * 
+	 * @return the command of the message.
+	 */
+	public String getCommand();
 
-	public IRCParameters getParams() {
-		return params;
-	}
+	/**
+	 * Returns the IRCParameters of the command.
+	 * 
+	 * @return the IRCParameters of the command.
+	 */
+	public IRCParameters getParameters();
 
-	void setPrefix(IRCPrefix prefix) {
-		this.prefix = prefix;
-	}
-
-	void setCommand(String command) {
-		this.command = command;
-	}
-
-	void setParams(IRCParameters params) {
-		this.params = params;
-	}
-
-	@Override
-	public String toString() {
-		String prefixString = "";
-		if (prefix != null) {
-			prefixString = PREFIX_INDICATOR + prefix.toString() + EMPTY_SPACE;
-		}
-		String paramsString = "";
-		if (params != null) {
-			paramsString = params.toString();
-		}
-		return prefixString + command + paramsString + MSG_END_SEQ;
-	}
+	/**
+	 * Returns the IRC representation of this message.
+	 * 
+	 * @return the IRC representation of this message.
+	 */
+	public String getString();
 }

@@ -1,4 +1,4 @@
-package client;
+package util;
 
 /**
  * This exception is thrown when a IRC connection related error occurs.

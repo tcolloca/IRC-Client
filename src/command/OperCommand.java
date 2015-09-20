@@ -1,44 +1,41 @@
 package command;
 
-import event.IRCEventBroadcaster;
 import parser.IRCMessage;
+import parser.IRCMessageImpl;
+import event.IRCEventListener;
 
 /**
  * A normal user uses the OPER command to obtain operator privileges.
  * 
  * @author Tomas
  */
-public class OperCommand extends IRCCommand {
+public class OperCommand extends IRCCommandImpl {
 
-	private static final int USERNAME_INDEX = 0;
-	private static final int PASSWORD_INDEX = 1;
-
-	private String username;
-	private String password;
-
+	public static final String OPER_COMMAND = "OPER";
+	
 	/**
 	 * @param username
-	 *            Username of the user calling the command.
+	 *            Username of the operator.
 	 * @param password
-	 *            Password of the username.
+	 *            Password of the operator.
 	 * @throws InvalidCommandException
 	 *             If username or password are null.
 	 */
-	public OperCommand(String username, String password) throws InvalidCommandException {
-		this(new IRCMessage(USER_COMMAND, username, password), null);
-	}
-
-	public OperCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster) throws InvalidCommandException {
-		super(ircMessage, broadcaster);
-		username = ircMessage.getParameter(USERNAME_INDEX);
-		password = ircMessage.getParameter(PASSWORD_INDEX);
+	public OperCommand(String username, String password)
+			throws InvalidCommandException {
+		super(new IRCMessageImpl(OPER_COMMAND, username, password));
 		if (username == null || password == null) {
 			throw new InvalidCommandException();
 		}
 	}
 
+	public OperCommand(IRCMessage ircMessage) throws InvalidCommandException {
+		super(ircMessage);
+		throw new IllegalStateException();
+	}
+
 	@Override
-	public void onExecute() {
+	public void onExecute(IRCEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

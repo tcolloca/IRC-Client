@@ -1,18 +1,21 @@
-package client;
+package reader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import util.IRCException;
 import util.IRCValues;
+import client.IRCClient;
+import client.IRCClientImpl;
 
 /**
  * This class is constantly reading from the channel given in the read method.
- * Each IRC message (ended with \r\n) is sent to the {@link IRCClient}.
+ * Each IRC message (ended with \r\n) is sent to the {@link IRCClientImpl}.
  * 
  * @author Tomas
  */
-public class IRCReader implements IRCValues {
+public class IRCReaderImpl implements IRCReader, IRCValues {
 
 	private static final char NULL = '\0';
 	private static final int BUFFER_SIZE = 10;
@@ -27,7 +30,7 @@ public class IRCReader implements IRCValues {
 	 * @throws IllegalArgumentException
 	 *             If ircClient is null.
 	 */
-	public IRCReader(IRCClient ircClient) {
+	public IRCReaderImpl(IRCClient ircClient) {
 		if (ircClient == null) {
 			throw new IllegalArgumentException();
 		}
@@ -35,21 +38,17 @@ public class IRCReader implements IRCValues {
 		this.messageBuilder = new StringBuilder();
 	}
 
-	/**
-	 * Reads endlessly from the channel received. When there is anything to be
-	 * processed, it will stop reading until control is returned, and will feed
-	 * the IRCClient with the message read.
-	 * 
-	 * @param channel
-	 *            Channel where it will read of.
-	 * @throws IOException
-	 */
-	public void read(SocketChannel channel) throws IOException {
+	@Override
+	public void read(SocketChannel channel) throws IRCException {
 		keepReading = true;
 		ByteBuffer readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 		while (keepReading) {
 			// Reads bytes from channel into readBuffer
-			channel.read(readBuffer);
+			try {
+				channel.read(readBuffer);
+			} catch (IOException e) {
+				throw new IRCException();
+			}
 			// Flips the buffer so that it can be read
 			readBuffer.flip();
 			// If there is anything to read, feed the IRCParser
@@ -70,6 +69,7 @@ public class IRCReader implements IRCValues {
 			}
 			messageBuilder.append((char) b);
 			if (messageBuilder.toString().endsWith(MSG_END_SEQ)) {
+				System.out.print("READING: " + messageBuilder.toString());
 				ircClient.feed(messageBuilder.toString());
 				messageBuilder = new StringBuilder();
 			}

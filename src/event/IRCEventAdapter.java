@@ -1,15 +1,14 @@
 package event;
 
+import model.IRCChannel;
+import model.IRCUser;
+
 /**
  * An adapter for the IRCEventListener.
  * 
  * @author Tomas
  */
 public class IRCEventAdapter implements IRCEventListener {
-
-	@Override
-	public void onConnect() {
-	}
 
 	@Override
 	public void onPing(String server) {
@@ -20,10 +19,14 @@ public class IRCEventAdapter implements IRCEventListener {
 	}
 
 	@Override
-	public void onNick(String user, String nickname) {
+	public void onNick(IRCUser user, String newNickname, String prevNickname) {
 	}
 
 	@Override
-	public void onNotice(String msgtarget, String message) {
+	public void onNotice(IRCChannel channel, String message) {
+	}
+
+	@Override
+	public void onJoin(IRCUser user, IRCChannel channel) {
 	}
 }

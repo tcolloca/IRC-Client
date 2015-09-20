@@ -1,42 +1,40 @@
 package command;
 
+import model.IRCDao;
 import parser.IRCMessage;
-import event.IRCEventBroadcaster;
+import parser.IRCMessageImpl;
+import event.IRCEventListener;
 
 /**
- * This command should be used to set a password for the connection.
+ * Sets the password for the nickname when connecting.
  * 
- * @param password
- * @throws IRCException
- * @throws {@link IllegalArgumentException} If password is null.
+ * @author Tomas
  */
-public class PassCommand extends IRCCommand {
+public class PassCommand extends IRCCommandImpl {
 
-	private static final int PASSWORD_INDEX = 0;
-
-	private String password;
-
+	public static final String PASS_COMMAND = "PASS";
+	
 	/**
 	 * @param password
-	 *            Password to be used for the connection.
+	 *            Password of the nickname.
 	 * @throws InvalidCommandException
 	 *             If password is null.
 	 */
 	public PassCommand(String password) throws InvalidCommandException {
-		this(new IRCMessage(PASS_COMMAND, password), null);
-	}
-
-	public PassCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster)
-			throws InvalidCommandException {
-		super(ircMessage, broadcaster);
-		password = ircMessage.getParameter(PASSWORD_INDEX);
+		super(new IRCMessageImpl(PASS_COMMAND, password));
 		if (password == null) {
 			throw new InvalidCommandException();
 		}
 	}
 
+	public PassCommand(IRCDao dao, IRCMessage ircMessage)
+			throws InvalidCommandException {
+		super(ircMessage);
+		throw new IllegalStateException();
+	}
+
 	@Override
-	public void onExecute() {
+	public void onExecute(IRCEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

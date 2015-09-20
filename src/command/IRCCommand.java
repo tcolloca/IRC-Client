@@ -1,56 +1,25 @@
 package command;
 
-import parser.IRCMessage;
-import util.IRCValues;
-import event.IRCEventBroadcaster;
+import event.IRCEventListener;
 
-public abstract class IRCCommand implements IRCValues {
-
-	private IRCMessage ircMessage;
-	private IRCEventBroadcaster broadcaster;
+public interface IRCCommand {
 
 	/**
-	 * Constructs the corresponding IRCCommand given the ircMessage.
+	 * Called when the command was read, and calls the corresponding method of
+	 * the IRCEventListener if there is any.
 	 * 
-	 * @param ircMessage
-	 * @param broadcaster
+	 * @param listener
 	 * @throws IllegalArgumentException
-	 *             If iRCMessage is null.
-	 * @throws InvalidCommandException
-	 *             If the command can't be constructed from the ircMessage.
+	 *             If listener is null.
+	 * @throws UnsupportedOperationException
+	 *             If there is no associated method for the listener.
 	 */
-	IRCCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster)
-			throws InvalidCommandException {
-		if (ircMessage == null) {
-			throw new IllegalArgumentException();
-		}
-		this.ircMessage = ircMessage;
-		this.broadcaster = broadcaster;
-	}
-
-	/**
-	 * Calls the corresponding method of the broadcaster given in the
-	 * constructor.
-	 * 
-	 * @throws NullPointerException
-	 *             If the command was created with a null broadcaster.
-	 */
-	public abstract void onExecute();
+	public abstract void onExecute(IRCEventListener listener);
 
 	/**
 	 * Returns the message that represents the IRCCommand.
 	 * 
 	 * @return the message that represents the IRCCommand.
 	 */
-	public String getMessage() {
-		return ircMessage.toString();
-	}
-
-	IRCMessage getIRCMessage() {
-		return ircMessage;
-	}
-
-	IRCEventBroadcaster getBroadcaster() {
-		return broadcaster;
-	}
+	public String getMessage();
 }

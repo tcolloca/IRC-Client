@@ -1,11 +1,15 @@
 package command;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import event.IRCEventBroadcaster;
+import model.IRCChannel;
+import model.IRCDao;
 import parser.IRCMessage;
+import parser.IRCMessageImpl;
 import util.StringConverter;
+import command.function.ChannelNameFunction;
+import event.IRCEventListener;
 
 /**
  * Lists all nicknames that are visible to him.
@@ -20,74 +24,53 @@ import util.StringConverter;
  * If the target parameter is specified, the request is forwarded to that server
  * which will generate the reply.
  * 
- * 
  * @author Tomas
  */
-public class NamesCommand extends IRCCommand {
+public class NamesCommand extends IRCCommandImpl {
 
-	private static final int CHANNELS_INDEX = 0;
-	private static final int TARGET_INDEX = 1;
-
-	private String[] channels;
-	@SuppressWarnings("unused") // TODO
-	private String target;
-
+	public static final String NAMES_COMMAND = "NAMES";
+	
 	public NamesCommand() throws InvalidCommandException {
-		this(new IRCMessage(NAMES_COMMAND, null, null), null);
+		this(new ArrayList<IRCChannel>());
 	}
 
 	/**
 	 * @param channels
-	 *            Channels' names to be asked the visible nicknames.
-	 * @throws InvalidCommandException
-	 *             If any of the channels is null.
-	 */
-	public NamesCommand(String... channels) throws InvalidCommandException {
-		this(Arrays.asList(channels));
-	}
-
-	/**
-	 * @param channels
-	 *            List containing the channels' names to be asked the visible
+	 *            List containing the channels to be asked the visible
 	 *            nicknames.
 	 * @throws InvalidCommandException
 	 *             If any of the channels is null.
 	 */
-	public NamesCommand(List<String> channels) throws InvalidCommandException {
+	public NamesCommand(List<IRCChannel> channels)
+			throws InvalidCommandException {
 		this(channels, null);
 	}
 
 	/**
 	 * @param channels
-	 *            List containing the channels names to be asked the visible
+	 *            List containing the channels to be asked the visible
 	 *            nicknames.
 	 * @param target
 	 *            Target server to ask the command.
 	 * @throws InvalidCommandException
 	 *             If any of the channels is null.
 	 */
-	public NamesCommand(List<String> channels, String target) throws InvalidCommandException {
-		this(new IRCMessage(NAMES_COMMAND,
-				channels != null ? StringConverter.stringfyList(channels, "" + IN_PARAM_SEPARATOR, "", "") : null,
-				target), null);
+	public NamesCommand(List<IRCChannel> channels, String target)
+			throws InvalidCommandException {
+		super(new IRCMessageImpl(NAMES_COMMAND,
+				channels != null ? StringConverter
+						.stringfyList(channels, "" + IN_PARAM_SEPARATOR, "",
+								"", new ChannelNameFunction()) : null, target));
 	}
 
-	public NamesCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster) throws InvalidCommandException {
-		super(ircMessage, broadcaster);
-		String channelsString = ircMessage.getParameter(CHANNELS_INDEX);
-		if (channelsString != null) {
-			channels = channelsString.split("" + IN_PARAM_SEPARATOR);
-			for (String channel : channels) {
-				if (channel == null) {
-					throw new InvalidCommandException();
-				}
-			}
-		}
-		target = ircMessage.getParameter(TARGET_INDEX);
+	public NamesCommand(IRCDao dao, IRCMessage ircMessage)
+			throws InvalidCommandException {
+		super(ircMessage);
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public void onExecute() {
+	public void onExecute(IRCEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

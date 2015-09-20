@@ -1,19 +1,19 @@
 package command;
 
+import model.IRCDao;
 import parser.IRCMessage;
-import event.IRCEventBroadcaster;
+import parser.IRCMessageImpl;
+import event.IRCEventListener;
 
 /**
-* This command represents a PONG command (The response to a PING command).
-* 
-* @author Tomas
-*/
-public class PongCommand extends IRCCommand {
+ * This command represents a PONG command (The response to a PING command).
+ * 
+ * @author Tomas
+ */
+public class PongCommand extends IRCCommandImpl {
 
-	private static final int SERVER_INDEX = 0;
-
-	private String server;
-
+	public static final String PONG_COMMAND = "PONG";
+	
 	/**
 	 * @param server
 	 *            Server to send the pong.
@@ -21,21 +21,20 @@ public class PongCommand extends IRCCommand {
 	 *             If server is null.
 	 */
 	public PongCommand(String server) throws InvalidCommandException {
-		this(new IRCMessage(PONG_COMMAND, server), null);
-	}
-
-	public PongCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster)
-			throws InvalidCommandException {
-		super(ircMessage, broadcaster);
-		server = ircMessage.getParameter(SERVER_INDEX);
+		super(new IRCMessageImpl(PONG_COMMAND, server));
 		if (server == null) {
 			throw new InvalidCommandException();
 		}
 	}
 
+	public PongCommand(IRCDao dao, IRCMessage ircMessage)
+			throws InvalidCommandException {
+		super(ircMessage);
+		throw new IllegalStateException();
+	}
+
 	@Override
-	public void onExecute() {
+	public void onExecute(IRCEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }
-

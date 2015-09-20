@@ -1,0 +1,26 @@
+package event;
+
+import command.IRCCommand;
+
+public interface IRCEventDispatcher {
+
+	/**
+	 * Adds the listener to the listeners' list.
+	 * 
+	 * @param listener
+	 * @throws IllegalArgumentException
+	 *             If listener is null.
+	 */
+	public void addListener(IRCEventListener listener);
+
+	/**
+	 * This method is called when a command was read, and it should end calling
+	 * the onExecute method from {@link IRCCommand} passing all of its listeners
+	 * as parameters.
+	 * 
+	 * @param command
+	 * @throws IllegalArgumentException
+	 *             If command is null.
+	 */
+	public void onExecute(IRCCommand command);
+}

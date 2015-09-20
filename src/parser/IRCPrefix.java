@@ -1,55 +1,38 @@
 package parser;
 
-import util.IRCValues;
-
 /**
- * Represents a message's prefix of IRC according to the BNF representation specified in the RFC 1459.
+ * Represents a message's prefix of IRC according to the BNF representation
+ * specified in the RFC 1459.
  * 
  * @author Tomas
  */
-public class IRCPrefix implements IRCValues {
+public interface IRCPrefix {
 
-	private String name;
-	private String user;
-	private String host;
+	/**
+	 * Returns the nickname of the prefix.
+	 * 
+	 * @return the nickname of the prefix.
+	 */
+	public String getNickame();
 
-	IRCPrefix() {
-	}
+	/**
+	 * Returns the user of the prefix, or null if not set.
+	 * 
+	 * @return the user of the prefix, or null if not set.
+	 */
+	public String getUser();
 
-	public String getName() {
-		return name;
-	}
+	/**
+	 * Returns the host of the prefix, or null if not set.
+	 * 
+	 * @return the host of the prefix, or null if not set.
+	 */
+	public String getHost();
 
-	public String getUser() {
-		return user;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	void setName(String name) {
-		this.name = name;
-	}
-
-	void setUser(String user) {
-		this.user = user;
-	}
-
-	void setHost(String host) {
-		this.host = host;
-	}
-
-	@Override 
-	public String toString() {
-		String userString = "";
-		if (user != null) {
-			userString += USER_INDICATOR + user;
-		}
-		String hostString = "";
-		if (host != null) {
-			hostString += HOST_INDICATOR + host;
-		}
-		return name + userString + hostString;
-	}
+	/**
+	 * Returns the IRC representation of this message.
+	 * 
+	 * @return the IRC representation of this message.
+	 */
+	public String getString();
 }

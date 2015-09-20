@@ -1,26 +1,22 @@
 package command;
 
+import model.IRCDao;
 import parser.IRCMessage;
-import event.IRCEventBroadcaster;
+import parser.IRCMessageImpl;
+import event.IRCEventListener;
 
 /**
  * This command must be used to register with the given username and realname.
  * 
  * @author Tomas
  */
-public class UserCommand extends IRCCommand {
+public class UserCommand extends IRCCommandImpl {
 
-	private static final int MODE_DEFAULT = 0;
-	private static final int USERNAME_INDEX = 0;
-	private static final int MODE_INDEX = 1;
-	private static final int REALNAME_INDEX = 3;
-
-	private String username;
-	private int mode;
-	private String unused;
-	private String realname;
-
+	public static final String USER_COMMAND = "USER";
+	
 	/**
+	 * Creates an UserCommand with mode 0.
+	 * 
 	 * @param username
 	 * @param realname
 	 * @throws InvalidCommandException
@@ -28,48 +24,33 @@ public class UserCommand extends IRCCommand {
 	 */
 	public UserCommand(String username, String realname)
 			throws InvalidCommandException {
-		this(new IRCMessage(USER_COMMAND, username, realname), null);
+		this(username, 0, realname);
 	}
-	
+
 	/**
 	 * @param username
+	 * @param mode
 	 * @param realname
 	 * @throws InvalidCommandException
 	 *             If username or realname are null.
 	 */
 	public UserCommand(String username, int mode, String realname)
 			throws InvalidCommandException {
-		this(new IRCMessage(USER_COMMAND, username, String.valueOf(mode), realname), null);
+		super(new IRCMessageImpl(USER_COMMAND, username, String.valueOf(mode),
+				UNUSED, realname));
 		if (username == null || realname == null) {
 			throw new InvalidCommandException();
 		}
 	}
 
-	public UserCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster)
+	public UserCommand(IRCDao dao, IRCMessage ircMessage)
 			throws InvalidCommandException {
-		super(ircMessage, broadcaster);
-		username = ircMessage.getParameter(USERNAME_INDEX);
-		if (ircMessage.amountOfParameters() == 2) {			
-			mode = MODE_DEFAULT;
-			realname = ircMessage.getParameter(REALNAME_INDEX - 2);
-		} else if (ircMessage.amountOfParameters() == 3) {
-			mode = Integer.valueOf(ircMessage.getParameter(MODE_INDEX));
-			realname = ircMessage.getParameter(REALNAME_INDEX - 1);
-		} else if (ircMessage.amountOfParameters() == 4) {
-			mode = Integer.valueOf(ircMessage.getParameter(MODE_INDEX));
-			realname = ircMessage.getParameter(REALNAME_INDEX);
-		} else {
-			throw new InvalidCommandException();
-		}
-		unused = UNUSED;
-		if (username == null || realname == null) {
-			throw new InvalidCommandException();
-		}
-		ircMessage.setParameters(username, String.valueOf(mode), unused, realname);
+		super(ircMessage);
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public void onExecute() {
+	public void onExecute(IRCEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

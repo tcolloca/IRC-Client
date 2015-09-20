@@ -1,83 +1,45 @@
 package parser;
 
-import java.util.List;
-
-import util.IRCValues;
-
 /**
  * Represents a message's parameters of IRC according to the BNF representation
  * specified in the RFC 1459.
  * 
  * @author Tomas
  */
-public class IRCParameters implements IRCValues {
+public interface IRCParameters {
 
-	public String trailing;
-	public String middle;
-	public IRCParameters params;
+	/**
+	 * Returns the trailing/last parameter, or null if there is none.
+	 * 
+	 * @return the trailing/last parameter, or null if there is none.
+	 */
+	public String getTrailing();
 
-	IRCParameters() {
-	}
+	/**
+	 * Returns the current parameter, or null if there is none.
+	 * 
+	 * @return the current parameter, or null if there is none.
+	 */
+	public String getMiddle();
 
-	IRCParameters(List<String> parameters) {
-		if (parameters.isEmpty()) {
-			return;
-		}
-		if (parameters.size() == 1) {
-			this.trailing = parameters.get(0);
-		} else {
-			this.middle = parameters.get(0);
-		}
-		params = new IRCParameters(parameters.subList(1, parameters.size()));
-	}
+	/**
+	 * Returns the next parameters, or null if there are none.
+	 * 
+	 * @return the next parameters, or null if there are none.
+	 */
+	public IRCParameters getParameters();
 
-	public String getTrailing() {
-		return trailing;
-	}
-
-	public String getMiddle() {
-		return middle;
-	}
-
-	public IRCParameters getParams() {
-		return params;
-	}
-
-	String getParameter(int index) {
-		if (index == 0) {
-			return middle != null ? middle : trailing;
-		}
-		return params != null ? params.getParameter(index - 1) : null;
-	}
-
-	int amountOfParameters() {
-		int aux = 0;
-		if (middle != null || trailing != null) {
-			aux++;
-		}
-		return params != null ? params.amountOfParameters() + aux : aux;
-	}
-
-	void setTrailing(String trailing) {
-		this.trailing = trailing;
-	}
-
-	void setMiddle(String middle) {
-		this.middle = middle;
-	}
-
-	void setParams(IRCParameters params) {
-		this.params = params;
-	}
-
-	@Override
-	public String toString() {
-		String paramsString = "";
-		if (middle != null) {
-			paramsString = middle + params.toString();
-		} else if (trailing != null) {
-			paramsString = TRAILING_INDICATOR + trailing;
-		}
-		return EMPTY_SPACE + paramsString;
-	}
+	/**
+	 * Returns the parameter in the given index, or null if there is none.
+	 * 
+	 * @return the parameter in the given index, or null if there is none.
+	 */
+	public String getParameter(int index);
+	
+	/**
+	 * Returns the IRC representation of this message.
+	 * 
+	 * @return the IRC representation of this message.
+	 */
+	public String getString();
 }

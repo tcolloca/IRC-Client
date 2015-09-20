@@ -1,32 +1,24 @@
 package command;
 
+import model.IRCDao;
 import parser.IRCMessage;
-import event.IRCEventBroadcaster;
+import event.IRCEventListener;
 
 /**
  * This command represents a PING command sent by the server.
  * 
  * @author Tomas
  */
-public class PingCommand extends IRCCommand {
+public class PingCommand extends IRCCommandImpl {
 
+	public static final String PING_COMMAND = "PING";
 	private static final int SERVER_INDEX = 0;
 
 	private String server;
 
-	/**
-	 * @param server
-	 *            Server that sent the ping.
-	 * @throws InvalidCommandException
-	 *             If server is null.
-	 */
-	public PingCommand(String server) throws InvalidCommandException {
-		this(new IRCMessage(PING_COMMAND, server), null);
-	}
-
-	public PingCommand(IRCMessage ircMessage, IRCEventBroadcaster broadcaster)
+	public PingCommand(IRCDao dao, IRCMessage ircMessage)
 			throws InvalidCommandException {
-		super(ircMessage, broadcaster);
+		super(ircMessage);
 		server = ircMessage.getParameter(SERVER_INDEX);
 		if (server == null) {
 			throw new InvalidCommandException();
@@ -34,7 +26,10 @@ public class PingCommand extends IRCCommand {
 	}
 
 	@Override
-	public void onExecute() {
-		getBroadcaster().onPing(server);
+	public void onExecute(IRCEventListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException();
+		}
+		listener.onPing(server);
 	}
 }

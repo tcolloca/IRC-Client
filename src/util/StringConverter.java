@@ -51,7 +51,8 @@ public class StringConverter {
 	 * {@code DEFAULT_SEPARATOR}.
 	 * 
 	 * @param list
-	 * @param enclosing
+	 * @param preItem
+	 * @param postItem
 	 * @return a string with all the elements converted into String with preItem
 	 *         before them and postItem after them, and separated with the
 	 *         {@code DEFAULT_SEPARATOR}.
@@ -69,7 +70,9 @@ public class StringConverter {
 	 * separator.
 	 * 
 	 * @param list
-	 * @param enclosing
+	 * @param separator
+	 * @param preItem
+	 * @param postItem
 	 * @return a string with all the elements converted into String with preItem
 	 *         before them and postItem after them, and separated with the given
 	 *         separator.
@@ -78,7 +81,8 @@ public class StringConverter {
 	 */
 	public static <T> String stringfyList(List<T> list, String separator,
 			String preItem, String postItem) {
-		if (list == null || separator == null || preItem == null || postItem == null) {
+		if (list == null || separator == null || preItem == null
+				|| postItem == null) {
 			throw new IllegalArgumentException();
 		}
 		if (list.isEmpty()) {
@@ -87,6 +91,38 @@ public class StringConverter {
 		String s = preItem + list.get(0).toString() + postItem;
 		for (T obj : list.subList(1, list.size())) {
 			s += separator + preItem + obj.toString() + postItem;
+		}
+		return s;
+	}
+
+	/**
+	 * Returns a string with all the elements converted into String using the
+	 * function received, with preItem before them and postItem after them, and
+	 * separated with the given separator.
+	 * 
+	 * @param list
+	 * @param separator
+	 * @param preItem
+	 * @param postItem
+	 * @param function
+	 * @return a string with all the elements converted into String using the
+	 *         function received, with preItem before them and postItem after
+	 *         them, and separated with the given separator.
+	 * @throws IllegalArgumentException
+	 *             If any of the arguments is null.
+	 */
+	public static <T> String stringfyList(List<T> list, String separator,
+			String preItem, String postItem, Function<T, String> function) {
+		if (list == null || separator == null || preItem == null
+				|| postItem == null || function == null) {
+			throw new IllegalArgumentException();
+		}
+		if (list.isEmpty()) {
+			return "";
+		}
+		String s = preItem + function.evaluate(list.get(0)) + postItem;
+		for (T obj : list.subList(1, list.size())) {
+			s += separator + preItem + function.evaluate(obj) + postItem;
 		}
 		return s;
 	}
