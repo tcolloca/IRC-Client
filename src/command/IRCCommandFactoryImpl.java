@@ -13,10 +13,10 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	private static final String COMMAND = "Command";
 	private static final String LOCATION = "command";
 	private static final String CONNECTION_REPLY = "ConnectionReply";
+	private static final String COMMAND_REPLY = "CommandReply";
 
 	@Override
-	public IRCCommand build(IRCDao dao, IRCMessage ircMessage)
-			throws InvalidCommandException {
+	public IRCCommand build(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
 		if (dao == null || ircMessage == null) {
 			throw new IllegalArgumentException();
 		}
@@ -24,31 +24,28 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 			throw new InvalidCommandException();
 		}
 		if (ircMessage.getCommand().matches(NUMERIC_RESPONSE)) {
-			return getInstance(getReplyClassName(ircMessage.getCommand()), dao,
-					ircMessage);
+			return getInstance(getReplyClassName(ircMessage.getCommand()), dao, ircMessage);
 		}
-		return getInstance(getCommandClassName(ircMessage.getCommand()), dao,
-				ircMessage);
+		return getInstance(getCommandClassName(ircMessage.getCommand()), dao, ircMessage);
 	}
 
-	private String getReplyClassName(String replyNumber)
-			throws InvalidCommandException {
+	private String getReplyClassName(String replyNumber) throws InvalidCommandException {
 		Integer number = Integer.valueOf(replyNumber);
 		if (0 <= number && number < 100) {
 			return LOCATION + "." + CONNECTION_REPLY + COMMAND;
+		} else if (200 <= number && number < 400) {
+			return LOCATION + "." + COMMAND_REPLY + COMMAND;
 		}
 		throw new InvalidCommandException();
 	}
 
 	private String getCommandClassName(String mode) {
-		String upperCaseMode = mode.substring(0, 1).toUpperCase()
-				+ mode.substring(1).toLowerCase();
+		String upperCaseMode = mode.substring(0, 1).toUpperCase() + mode.substring(1).toLowerCase();
 		String simpleClassName = upperCaseMode + COMMAND;
 		return LOCATION + "." + simpleClassName;
 	}
 
-	private IRCCommand getInstance(String className, IRCDao dao,
-			IRCMessage message) throws InvalidCommandException {
+	private IRCCommand getInstance(String className, IRCDao dao, IRCMessage message) throws InvalidCommandException {
 		try {
 			Class<? extends IRCCommand> clazz = getIRCCommandClass(className);
 			Constructor<? extends IRCCommand> constructor;
@@ -68,8 +65,7 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends IRCCommand> getIRCCommandClass(String className)
-			throws InvalidCommandException {
+	private Class<? extends IRCCommand> getIRCCommandClass(String className) throws InvalidCommandException {
 		try {
 			return (Class<IRCCommand>) Class.forName(className);
 		} catch (ClassNotFoundException e) {

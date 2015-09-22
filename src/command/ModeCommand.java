@@ -72,5 +72,4 @@ public class ModeCommand extends IRCCommandImpl {
 			listener.onMode(channel, channelModeActions);
 		}
 	}
-	// TODO
 }

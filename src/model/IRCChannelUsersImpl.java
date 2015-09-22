@@ -150,4 +150,60 @@ public class IRCChannelUsersImpl implements IRCChannelUsers, IRCValues {
 	public void addNormalUser(IRCUser user) {
 		normalUsers.add(user);
 	}
+
+	@Override
+	public void addHalfOpUser(IRCUser user) {
+		halfops.add(user);
+	}
+
+	@Override
+	public void addOpUser(IRCUser user) {
+		System.out.println("adding Op");
+		ops.add(user);
+	}
+
+	@Override
+	public void addSuperOpUser(IRCUser user) {
+		superops.add(user);
+	}
+
+	@Override
+	public void addOwnerUser(IRCUser user) {
+		owners.add(user);
+	}
+
+	@Override
+	public void addVoicedUser(IRCUser user) {
+		voiced.add(user);
+	}
+
+	@Override
+	public void removeNormalUser(IRCUser user) {
+		normalUsers.remove(user);
+	}
+
+	@Override
+	public void removeHalfOpUser(IRCUser user) {
+		halfops.remove(user);
+	}
+
+	@Override
+	public void removeOpUser(IRCUser user) {
+		ops.remove(user);
+	}
+
+	@Override
+	public void removeSuperOpUser(IRCUser user) {
+		superops.remove(user);
+	}
+
+	@Override
+	public void removeOwnerUser(IRCUser user) {
+		owners.remove(user);
+	}
+
+	@Override
+	public void removeVoicedUser(IRCUser user) {
+		voiced.remove(user);
+	}
 }

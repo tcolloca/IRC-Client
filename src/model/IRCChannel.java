@@ -12,14 +12,14 @@ public interface IRCChannel {
 	public String getName();
 
 	/**
-	 * Returns the channel key. Null if it is not set.
+	 * Returns the channel key. Null if it is not set, or is unknown.
 	 * 
-	 * @return the channel key. Null if it is not set.
+	 * @return the channel key. Null if it is not set, or is unknown.
 	 */
 	public String getKey();
 
 	/**
-	 * Returns the topic of this channel. Null if it is still unknown.
+	 * Returns the topic of this channel. Null if it is not set, or is unknown.
 	 * 
 	 * @return the topic of this channel.
 	 */
@@ -41,7 +41,8 @@ public interface IRCChannel {
 	public int getLimit();
 
 	/**
-	 * Returns the flood limit of the channel. Null if it is still unknown.
+	 * Returns the flood limit of the channel. Null if it is not set, or is
+	 * unknown.
 	 * 
 	 * @return the flood limit of the channel.
 	 */

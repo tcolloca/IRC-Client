@@ -40,6 +40,10 @@ public class IRCModeAction implements IRCValues {
 		return action;
 	}
 
+	public String[] getParameters() {
+		return parameters;
+	}
+
 	public String getString() {
 		return "" + action + mode.getLetter() + getParamsString();
 	}

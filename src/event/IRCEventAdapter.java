@@ -38,11 +38,14 @@ public class IRCEventAdapter implements IRCEventListener {
 	}
 
 	@Override
-	public void onMode(IRCChannel channel,
-			List<IRCModeAction> channelModeActions) {
+	public void onMode(IRCChannel channel, List<IRCModeAction> channelModeActions) {
 	}
 
 	@Override
 	public void onConnectionReply(int replyNumber, List<String> parameters) {
+	}
+
+	@Override
+	public void onCommandReply(int replyNumber, List<String> parameters) {
 	}
 }

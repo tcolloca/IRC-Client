@@ -141,8 +141,7 @@ public interface IRCChannelModes {
 	 * @throws IllegalArgumentException
 	 *             If modes is null, or any mode or parameter is null.
 	 */
-	public void setChannelModes(List<IRCChannelMode> modes,
-			String... parameters);
+	public void setChannelModes(List<IRCChannelMode> modes, String... parameters);
 
 	/**
 	 * Attempts to set the channel mode.
@@ -164,8 +163,7 @@ public interface IRCChannelModes {
 	 * @throws IllegalArgumentException
 	 *             If modes is null, or any mode or parameter is null.
 	 */
-	public void unsetChannelModes(List<IRCChannelMode> modes,
-			String... parameters);
+	public void unsetChannelModes(List<IRCChannelMode> modes, String... parameters);
 
 	/**
 	 * Attempts to unset the channel mode.
@@ -319,4 +317,8 @@ public interface IRCChannelModes {
 	 *            New boolean value for the mode.
 	 */
 	public void setNoInvitations(boolean bool);
+
+	void putMode(IRCChannelMode mode);
+
+	void deleteMode(IRCChannelMode mode);
 }

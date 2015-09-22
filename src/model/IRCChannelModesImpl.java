@@ -241,4 +241,14 @@ public class IRCChannelModesImpl implements IRCChannelModes, IRCValues {
 			throw new IRCFrameworkErrorException();
 		}
 	}
+
+	@Override
+	public void putMode(IRCChannelMode mode) {
+		modes.add(mode);
+	}
+	
+	@Override
+	public void deleteMode(IRCChannelMode mode) {
+		modes.remove(mode);
+	}
 }

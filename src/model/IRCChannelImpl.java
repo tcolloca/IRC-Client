@@ -2,12 +2,12 @@ package model;
 
 import java.util.List;
 
-import util.IRCValues;
 import client.IRCClient;
 import event.IRCEventAdapter;
+import util.IRCCommandReplyValues;
+import util.IRCValues;
 
-public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel,
-		IRCValues {
+public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCValues, IRCCommandReplyValues {
 
 	private IRCClient client;
 
@@ -186,16 +186,197 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel,
 
 	@Override
 	public void onJoin(IRCUser user, IRCChannel channel) {
+		if (user == null || channel == null) {
+			throw new IllegalArgumentException();
+		}
 		if (channel.equals(this)) {
 			users.addNormalUser(user);
 		}
 	}
 
 	@Override
-	public void onMode(IRCChannel channel,
-			List<IRCModeAction> channelModeActions) {
+	public void onCommandReply(int replyNumber, List<String> parameters) {
+		if (replyNumber == RPL_NAMREPLY) {
+			System.out.println(parameters.get(0));
+		}
+	}
+
+	@Override
+	public void onMode(IRCChannel channel, List<IRCModeAction> channelModeActions) {
+		if (channel == null || channelModeActions == null) {
+			throw new IllegalArgumentException();
+		}
 		if (channel.equals(this)) {
-			// TODO : Set all the new modes.
+			for (IRCModeAction modeAction : channelModeActions) {
+				if (modeAction == null) {
+					throw new IllegalArgumentException();
+				}
+				IRCChannelMode mode = (IRCChannelMode) modeAction.getMode();
+				String[] parameters = modeAction.getParameters();
+				char action = modeAction.getAction();
+				switch (mode) {
+				case VOICE:
+				case HALFOP:
+				case OP:
+				case ADMIN:
+				case OWNER:
+					changeUser(mode, parameters, action);
+					break;
+				case BAN_MASK:
+				case BAN_EXCEPTION_MASK:
+				case INVITE_ONLY_MASK:
+					changeMask(mode, parameters, action);
+					break;
+				case KEY:
+					changeKey(mode, parameters, action);
+					changeMode(mode, action);
+					break;
+				case USERS_LIMIT:
+					changeLimit(mode, parameters, action);
+					changeMode(mode, action);
+					break;
+				case FLOOD_LIMIT:
+					changeFloodLimit(mode, parameters, action);
+					changeMode(mode, action);
+					break;
+				default:
+					changeMode(mode, action);
+					break;
+				}
+			}
+		}
+	}
+
+	private void changeUser(IRCChannelMode mode, String[] parameters, char action) {
+		if (parameters.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		String userName = parameters[0];
+		IRCUser user = client.getUser(userName);
+		if (user == null) {
+			throw new IllegalArgumentException();
+		}
+		switch (mode) {
+		case VOICE:
+			if (action == ADD) {
+				users.addVoicedUser(user);
+			} else if (action == DEL) {
+				users.removeVoicedUser(user);
+			}
+			break;
+		case HALFOP:
+			if (action == ADD) {
+				users.addHalfOpUser(user);
+			} else if (action == DEL) {
+				users.removeHalfOpUser(user);
+			}
+			break;
+		case OP:
+			if (action == ADD) {
+				users.addOpUser(user);
+			} else if (action == DEL) {
+				users.removeOpUser(user);
+			}
+			break;
+		case ADMIN:
+			if (action == ADD) {
+				users.addSuperOpUser(user);
+			} else if (action == DEL) {
+				users.removeSuperOpUser(user);
+			}
+			break;
+		case OWNER:
+			if (action == ADD) {
+				users.addOwnerUser(user);
+			} else if (action == DEL) {
+				users.removeOwnerUser(user);
+			}
+			break;
+		default:
+			throw new IllegalArgumentException();
+
+		}
+	}
+
+	private void changeMask(IRCChannelMode mode, String[] parameters, char action) {
+		if (parameters.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		String maskName = parameters[0];
+		IRCMask mask = new IRCMask(maskName);
+		switch (mode) {
+		case BAN_MASK:
+			if (action == ADD) {
+				masks.putBanMask(mask);
+			} else if (action == DEL) {
+				masks.deleteBanMask(mask);
+			}
+			break;
+		case BAN_EXCEPTION_MASK:
+			if (action == ADD) {
+				masks.putBanExceptionMask(mask);
+			} else if (action == DEL) {
+				masks.deleteBanExceptionMask(mask);
+			}
+			break;
+		case INVITE_ONLY_MASK:
+			if (action == ADD) {
+				masks.putInviteOnlyMask(mask);
+			} else if (action == DEL) {
+				masks.deleteInviteOnlyMask(mask);
+			}
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private void changeKey(IRCChannelMode mode, String[] parameters, char action) {
+		if (parameters.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		String key = parameters[0];
+		if (action == ADD) {
+			this.key = key;
+		} else if (action == DEL) {
+			this.key = null;
+		}
+	}
+
+	private void changeLimit(IRCChannelMode mode, String[] parameters, char action) {
+		if (parameters.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			int limit = Integer.valueOf(parameters[0]);
+			if (action == ADD) {
+				this.limit = limit;
+			} else if (action == DEL) {
+				this.limit = -1;
+			}
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private void changeFloodLimit(IRCChannelMode mode, String[] parameters, char action) {
+		if (parameters.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		String floodLimitRegex = parameters[0];
+		IRCFloodLimit floodLimit = new IRCFloodLimit(floodLimitRegex);
+		if (action == ADD) {
+			this.floodLimit = floodLimit;
+		} else if (action == DEL) {
+			this.floodLimit = null;
+		}
+	}
+
+	private void changeMode(IRCChannelMode mode, char action) {
+		if (action == ADD) {
+			modes.putMode(mode);
+		} else if (action == DEL) {
+			modes.deleteMode(mode);
 		}
 	}
 }

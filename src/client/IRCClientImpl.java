@@ -7,22 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import model.IRCChannel;
-import model.IRCDao;
-import model.IRCDaoImpl;
-import model.IRCUser;
-import parser.IRCMessage;
-import parser.IRCParser;
-import parser.IRCParserImpl;
-import reader.IRCReader;
-import reader.IRCReaderImpl;
-import util.ConnectionReplyValues;
-import util.IRCException;
-import util.IRCFrameworkErrorException;
-import util.IRCValues;
-import writer.IRCWriter;
-import writer.IRCWriterImpl;
-
 import command.IRCCommand;
 import command.IRCCommandFactory;
 import command.IRCCommandFactoryImpl;
@@ -32,20 +16,33 @@ import command.NickCommand;
 import command.PassCommand;
 import command.PongCommand;
 import command.UserCommand;
-
 import event.IRCEventAdapter;
 import event.IRCEventDispatcher;
 import event.IRCEventDispatcherMultiThread;
 import event.IRCEventDispatcherSingleThread;
 import event.IRCEventListener;
+import model.IRCChannel;
+import model.IRCDao;
+import model.IRCDaoImpl;
+import model.IRCUser;
+import parser.IRCMessage;
+import parser.IRCParser;
+import parser.IRCParserImpl;
+import reader.IRCReader;
+import reader.IRCReaderImpl;
+import util.IRCConnectionReplyValues;
+import util.IRCException;
+import util.IRCFrameworkErrorException;
+import util.IRCValues;
+import writer.IRCWriter;
+import writer.IRCWriterImpl;
 
 /**
  * The main class of the IRC Connection framework.
  * 
  * @author Tomas
  */
-public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
-		IRCValues, ConnectionReplyValues {
+public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValues, IRCConnectionReplyValues {
 
 	private static final int PORT = 6667;
 
@@ -57,6 +54,7 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
 	private IRCEventDispatcher eventDispatcher;
 	private IRCDao dao;
 	private SocketChannel channel;
+	@SuppressWarnings("unused")
 	private IRCClientUser clientUser;
 
 	/**
@@ -100,8 +98,8 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
 			}
 			// TODO : Change exception to catch to InvalidCommandException
 		} catch (Exception e) {
-			// TODO
-			// throw new IRCFrameworkErrorException();
+			// TODO : throw new IRCFrameworkErrorException();
+			e.printStackTrace();
 		}
 	}
 
@@ -120,6 +118,14 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
 			throw new IllegalArgumentException();
 		}
 		eventDispatcher.addListener(listener);
+	}
+
+	@Override
+	public IRCUser getUser(String userName) {
+		if (userName == null) {
+			throw new IllegalArgumentException();
+		}
+		return dao.getUser(userName);
 	}
 
 	@Override
@@ -202,8 +208,7 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
 				sendCommand(new PassCommand(config.getPassword()));
 			}
 			sendCommand(new NickCommand(config.getNickname()));
-			sendCommand(new UserCommand(config.getUsername(),
-					config.getRealname()));
+			sendCommand(new UserCommand(config.getUsername(), config.getRealname()));
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
@@ -221,11 +226,9 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
 		}
 	}
 
-	public static void main(String[] args) throws IOException, IRCException,
-			InterruptedException {
-		IRCClient client = new IRCClientImpl((new IRCConfiguration(
-				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"))
-				.setNickname("TomBot"));
+	public static void main(String[] args) throws IOException, IRCException, InterruptedException {
+		IRCClient client = new IRCClientImpl((new IRCConfiguration("irc.mibbit.net"))
+				.setInitialChannels(Arrays.asList("#guiamt")).setNickname("TomBot"));
 		client.run();
 	}
 }

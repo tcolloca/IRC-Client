@@ -80,7 +80,7 @@ public interface IRCChannelMasks {
 	 *             if inviteOnlyMask is null.
 	 */
 	public void addInviteOnlyMask(IRCMask inviteOnlyMask);
-	
+
 	/**
 	 * Attempts to remove the banMasks from the channel.
 	 * 
@@ -128,4 +128,16 @@ public interface IRCChannelMasks {
 	 *             if inviteOnlyMask is null.
 	 */
 	public void removeInviteOnlyMask(IRCMask inviteOnlyMask);
+
+	void putBanMask(IRCMask banMask);
+
+	void putBanExceptionMask(IRCMask banExceptionMask);
+
+	void putInviteOnlyMask(IRCMask inviteOnlyMask);
+
+	void deleteBanMask(IRCMask banMask);
+
+	void deleteBanExceptionMask(IRCMask banExceptionMask);
+
+	void deleteInviteOnlyMask(IRCMask inviteOnlyMask);
 }

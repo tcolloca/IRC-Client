@@ -148,11 +148,27 @@ public interface IRCChannelUsers {
 	 */
 	public void removeVoice(IRCUser user);
 
-	/**
-	 * Adds the user to the channel.
-	 * 
-	 * @param user
-	 *            User being added to the channel.
-	 */
 	void addNormalUser(IRCUser user);
+
+	void addHalfOpUser(IRCUser user);
+
+	void addOpUser(IRCUser user);
+
+	void addSuperOpUser(IRCUser user);
+
+	void addOwnerUser(IRCUser user);
+
+	void addVoicedUser(IRCUser user);
+
+	void removeNormalUser(IRCUser user);
+
+	void removeHalfOpUser(IRCUser user);
+
+	void removeOpUser(IRCUser user);
+
+	void removeSuperOpUser(IRCUser user);
+
+	void removeOwnerUser(IRCUser user);
+
+	void removeVoicedUser(IRCUser user);
 }

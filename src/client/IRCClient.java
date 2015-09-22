@@ -1,10 +1,9 @@
 package client;
 
-import util.IRCException;
-
 import command.IRCCommand;
-
 import event.IRCEventListener;
+import model.IRCUser;
+import util.IRCException;
 
 public interface IRCClient {
 
@@ -45,4 +44,13 @@ public interface IRCClient {
 	 *             If listener is null.
 	 */
 	public void addListener(IRCEventListener listener);
+
+	/**
+	 * Returns the IRCUser with that userName.
+	 * 
+	 * @return the IRCUser with that userName.
+	 * @throws IllegalArgumentException
+	 *             If userName is null.
+	 */
+	public IRCUser getUser(String userName);
 }
