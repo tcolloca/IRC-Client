@@ -2,6 +2,10 @@ package client;
 
 import util.IRCException;
 
+import command.IRCCommand;
+
+import event.IRCEventListener;
+
 public interface IRCClient {
 
 	/**
@@ -22,4 +26,23 @@ public interface IRCClient {
 	 *             If message is null.
 	 */
 	public void feed(String message);
+
+	/**
+	 * Sends the command to the server.
+	 * 
+	 * @param command
+	 *            Command to be sent.
+	 */
+	public void sendCommand(IRCCommand command);
+
+	/**
+	 * Adds a listener for the IRCEvents dispatched by the IRCClient.
+	 * 
+	 * @param listener
+	 *            Listener to be added.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If listener is null.
+	 */
+	public void addListener(IRCEventListener listener);
 }

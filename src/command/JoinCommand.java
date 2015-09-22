@@ -9,8 +9,6 @@ import model.IRCUser;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
 import util.StringConverter;
-import command.function.ChannelKeyFunction;
-import command.function.ChannelNameFunction;
 import event.IRCEventListener;
 
 /**

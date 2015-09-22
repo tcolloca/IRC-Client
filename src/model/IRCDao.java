@@ -4,7 +4,8 @@ public interface IRCDao {
 
 	/**
 	 * Returns the IRCUser that has that userName
-	 * (<nickname>[!<username>][@<host>]), or null if there is no one.
+	 * (&lt;nickname&gt;[!&lt;username&gt;][@&lt;host&gt;]), or null if there is
+	 * no one.
 	 * 
 	 * @param userName
 	 * @return the IRCUser that has that userName, or null if there is no one.
@@ -35,6 +36,29 @@ public interface IRCDao {
 	 *             userName.
 	 */
 	public IRCUser addUser(String userName);
+
+	/**
+	 * Adds the user to the dao.
+	 * 
+	 * @param user
+	 *            User to be added.
+	 * @return The IRCUser that has been created.
+	 * @throws IllegalArgumentException
+	 *             If user is null or if it already exists that user in the dao.
+	 */
+	public IRCUser addUser(IRCUser user);
+
+	/**
+	 * Returns the IRCUser that has that userName
+	 * (&lt;nickname&gt;[!&lt;username&gt;][@&lt;host&gt;]) and removes it from
+	 * the dao, or null if there is no one.
+	 * 
+	 * @param userName
+	 * @return the IRCUser that has that userName, or null if there is no one.
+	 * @throws IllegalArgumentException
+	 *             If userName is null.
+	 */
+	public IRCUser removeUser(String userName);
 
 	/**
 	 * Returns the channel with that name, and null if there is no one.
@@ -84,4 +108,28 @@ public interface IRCDao {
 	 *             name.
 	 */
 	public IRCChannel addChannel(String name, String password);
+
+	/**
+	 * Adds the channel to the dao.
+	 * 
+	 * @param channel
+	 *            Channel to be added.
+	 * @return The IRCChannel that has been created.
+	 * @throws IllegalArgumentException
+	 *             If channel is null or if it already exists that channel in
+	 *             the dao.
+	 */
+	public IRCChannel addChannel(IRCChannel channel);
+
+	/**
+	 * Returns the channel with that name and removes if from the dao, and null
+	 * if there is no one.
+	 * 
+	 * @param name
+	 *            Name of the channel.
+	 * @return the channel with that name, and null if there is no one.
+	 * @throws IllegalArgumentException
+	 *             If name is null.
+	 */
+	public IRCChannel removeChannel(String name);
 }

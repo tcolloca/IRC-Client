@@ -31,7 +31,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 		char[] charArr = userName.toCharArray();
 		StringBuilder nicknameBuilder = new StringBuilder();
 		for (int i = 0; i < charArr.length && charArr[i] != EMPTY_SPACE
-				&& charArr[i] != USER_INDICATOR; i++) {
+				&& charArr[i] != USERNAME_INDICATOR; i++) {
 			nicknameBuilder.append(charArr[i]);
 		}
 		return nicknameBuilder.toString();
@@ -50,7 +50,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 			if (flag) {
 				usernameBuilder.append(charArr[i]);
 			}
-			if (charArr[i] == USER_INDICATOR) {
+			if (charArr[i] == USERNAME_INDICATOR) {
 				flag = true;
 			}
 		}
@@ -58,7 +58,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 	}
 
 	@Override
-	public String parseHost(String userName) {
+	public String parseHostname(String userName) {
 		if (userName == null) {
 			throw new IllegalArgumentException();
 		}
@@ -87,7 +87,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 		start++;
 		IRCPrefixImpl ircPrefix = new IRCPrefixImpl();
 		start = parsePrefixName(ircPrefix, charArr, start);
-		if (charArr.length > start && charArr[start] == USER_INDICATOR) {
+		if (charArr.length > start && charArr[start] == USERNAME_INDICATOR) {
 			start++;
 			start = parsePrefixUser(ircPrefix, charArr, start);
 		}
@@ -104,7 +104,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 		int i;
 		StringBuilder nameBuilder = new StringBuilder();
 		for (i = start; i < charArr.length && charArr[i] != EMPTY_SPACE
-				&& charArr[i] != USER_INDICATOR; i++) {
+				&& charArr[i] != USERNAME_INDICATOR; i++) {
 			nameBuilder.append(charArr[i]);
 		}
 		ircPrefix.setNickname(nameBuilder.toString());

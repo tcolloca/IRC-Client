@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import util.IRCValues;
@@ -48,7 +49,21 @@ public class IRCParametersImpl implements IRCParameters, IRCValues {
 		}
 		return parameters != null ? parameters.getParameter(index - 1) : null;
 	}
-	
+
+	@Override
+	public List<String> getParametersAsList() {
+		List<String> list = new ArrayList<String>();
+		if (middle != null) {
+			list.add(middle);
+		} else if (trailing != null) {
+			list.add(trailing);
+		}
+		if (parameters != null) {
+			list.addAll(parameters.getParametersAsList());
+		}
+		return list;
+	}
+
 	@Override
 	public String getString() {
 		String paramsString = "";

@@ -85,6 +85,15 @@ public class IRCMessageImpl implements IRCMessage, IRCValues {
 	public IRCParameters getParameters() {
 		return params;
 	}
+	
+	@Override
+	public List<String> getParametersAsList() {
+		List<String> list = new ArrayList<String>();
+		if (params != null) {
+			list.addAll(params.getParametersAsList());
+		}
+		return list;
+	}
 
 	@Override
 	public String getString() {

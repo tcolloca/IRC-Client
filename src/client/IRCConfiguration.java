@@ -8,7 +8,7 @@ import event.IRCEventListener;
 public class IRCConfiguration {
 
 	private static final String DEFAULT_NICKNAME = "IrcClient";
-	private static final String DEFAULT_USERNAME = "IrcClient1.0";
+	private static final String DEFAULT_USERNAME = "IrcClient";
 	private static final String DEFAULT_REALNAME = "IrcClient 1.0 developed by Tomas Colloca :)";
 
 	private String server;

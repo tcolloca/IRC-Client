@@ -12,6 +12,7 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	private static final String NUMERIC_RESPONSE = "\\d\\d\\d";
 	private static final String COMMAND = "Command";
 	private static final String LOCATION = "command";
+	private static final String CONNECTION_REPLY = "ConnectionReply";
 
 	@Override
 	public IRCCommand build(IRCDao dao, IRCMessage ircMessage)
@@ -23,13 +24,23 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 			throw new InvalidCommandException();
 		}
 		if (ircMessage.getCommand().matches(NUMERIC_RESPONSE)) {
-			return null;
+			return getInstance(getReplyClassName(ircMessage.getCommand()), dao,
+					ircMessage);
 		}
-		return getInstance(getClassName(ircMessage.getCommand()), dao,
+		return getInstance(getCommandClassName(ircMessage.getCommand()), dao,
 				ircMessage);
 	}
 
-	private String getClassName(String mode) {
+	private String getReplyClassName(String replyNumber)
+			throws InvalidCommandException {
+		Integer number = Integer.valueOf(replyNumber);
+		if (0 <= number && number < 100) {
+			return LOCATION + "." + CONNECTION_REPLY + COMMAND;
+		}
+		throw new InvalidCommandException();
+	}
+
+	private String getCommandClassName(String mode) {
 		String upperCaseMode = mode.substring(0, 1).toUpperCase()
 				+ mode.substring(1).toLowerCase();
 		String simpleClassName = upperCaseMode + COMMAND;

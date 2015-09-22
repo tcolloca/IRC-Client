@@ -36,13 +36,13 @@ public interface IRCParser {
 
 	/**
 	 * Parses the given userName and returns the host on it. Null if it has no
-	 * host.
+	 * hostname.
 	 * 
 	 * @param userName
-	 * @return the host within the userName. Null if it has no host.
+	 * @return the hostname within the userName. Null if it has no hostname.
 	 * @throws IllegalArgumentException
 	 *             If userName is null.
 	 */
-	String parseHost(String userName);
+	String parseHostname(String userName);
 
 }

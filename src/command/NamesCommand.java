@@ -8,7 +8,6 @@ import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
 import util.StringConverter;
-import command.function.ChannelNameFunction;
 import event.IRCEventListener;
 
 /**

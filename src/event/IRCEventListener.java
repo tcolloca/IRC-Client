@@ -1,8 +1,10 @@
 package event;
 
+import java.util.List;
+
 import model.IRCChannel;
+import model.IRCModeAction;
 import model.IRCUser;
-import util.IRCException;
 
 /**
  * Listener of an IRC Event.
@@ -20,11 +22,8 @@ public interface IRCEventListener {
 	 */
 	public void onPing(String server);
 
-	// TODO :
 	/**
-	 * This method is called after the user's mode has been set.
-	 * 
-	 * @throws IRCException
+	 * This method is called after the server replied with the Welcome message.
 	 */
 	public void onLogin();
 
@@ -67,4 +66,42 @@ public interface IRCEventListener {
 	 * @throws {@link IllegalArgumentException} If user or channel are null.
 	 */
 	public void onJoin(IRCUser user, IRCChannel channel);
+
+	/**
+	 * This method is called when the modes of an user are changed.
+	 * 
+	 * @param user
+	 *            User that has changed modes.
+	 * @param userModeActions
+	 *            Mode changes of the user.
+	 * @throws {@link IllegalArgumentException} If channel or userModeActions
+	 *         are null.
+	 */
+	public void onMode(IRCUser user, List<IRCModeAction> userModeActions);
+
+	/**
+	 * This method is called when the modes of a channel are changed.
+	 * 
+	 * @param channel
+	 *            Channel that has changed modes.
+	 * @param channelModeActions
+	 *            Mode changes of the channel.
+	 * @throws {@link IllegalArgumentException} If channel or channelModeActions
+	 *         are null.
+	 */
+	public void onMode(IRCChannel channel,
+			List<IRCModeAction> channelModeActions);
+
+	/**
+	 * This method is called when the server replies with a connection related
+	 * reply (000-099).
+	 * 
+	 * @param replyNumber
+	 *            Number of the reply.
+	 * @param parameters
+	 *            Parameters of the reply.
+	 * @throws IllegalArgumentException
+	 *             If parameters is null.
+	 */
+	public void onConnectionReply(int replyNumber, List<String> parameters);
 }

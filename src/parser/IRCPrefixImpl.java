@@ -30,7 +30,7 @@ public class IRCPrefixImpl implements IRCPrefix, IRCValues {
 	public String getString() {
 		String userString = "";
 		if (user != null) {
-			userString += USER_INDICATOR + user;
+			userString += USERNAME_INDICATOR + user;
 		}
 		String hostString = "";
 		if (host != null) {

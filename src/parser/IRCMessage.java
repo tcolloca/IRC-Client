@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.List;
+
 /**
  * Represents a message of IRC according to the BNF representation specified in
  * the RFC 1459.
@@ -61,9 +63,17 @@ public interface IRCMessage {
 	public IRCParameters getParameters();
 
 	/**
+	 * Returns the parameters of the command as a list of strings.
+	 * 
+	 * @return the parameters of the command as a list of strings.
+	 */
+	public List<String> getParametersAsList();
+
+	/**
 	 * Returns the IRC representation of this message.
 	 * 
 	 * @return the IRC representation of this message.
 	 */
 	public String getString();
+
 }

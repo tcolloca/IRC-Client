@@ -4,17 +4,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 import parser.IRCParser;
+import client.IRCClient;
 
 public class IRCDaoImpl implements IRCDao {
 
 	private Map<String, IRCUser> users;
 	private Map<String, IRCChannel> channels;
+	private IRCClient client;
 	private IRCParser parser;
 
-	public IRCDaoImpl(IRCParser parser) {
-		if (parser == null) {
+	/**
+	 * @param client
+	 *            Client that holds the Dao.
+	 * @param parser
+	 * @throws IllegalArgumentException
+	 *             If client or parser are null.
+	 */
+	public IRCDaoImpl(IRCClient client, IRCParser parser) {
+		if (client == null || parser == null) {
 			throw new IllegalArgumentException();
 		}
+		this.client = client;
 		this.parser = parser;
 		users = new HashMap<String, IRCUser>();
 		channels = new HashMap<String, IRCChannel>();
@@ -41,10 +51,24 @@ public class IRCDaoImpl implements IRCDao {
 		}
 		String nickname = parser.parseNickname(userName);
 		String username = parser.parseUsername(userName);
-		String host = parser.parseHost(username);
-		IRCUser user = new IRCUserImpl(nickname, username, host);
+		String hostname = parser.parseHostname(userName);
+		IRCUser user = new IRCUserImpl(nickname, username, hostname);
 		users.put(nickname, user);
 		return user;
+	}
+
+	@Override
+	public IRCUser addUser(IRCUser user) {
+		if (user == null || users.containsValue(user)) {
+			throw new IllegalArgumentException();
+		}
+		users.put(user.getNickname(), user);
+		return user;
+	}
+
+	@Override
+	public IRCUser removeUser(String userName) {
+		return users.remove(userName);
 	}
 
 	@Override
@@ -70,8 +94,22 @@ public class IRCDaoImpl implements IRCDao {
 		if (name == null || hasChannel(name)) {
 			throw new IllegalArgumentException();
 		}
-		IRCChannel channel = new IRCChannelImpl(name, password);
+		IRCChannel channel = new IRCChannelImpl(client, name, password);
 		channels.put(name, channel);
 		return channel;
+	}
+
+	@Override
+	public IRCChannel addChannel(IRCChannel channel) {
+		if (channel == null || channels.containsValue(channel)) {
+			throw new IllegalArgumentException();
+		}
+		channels.put(channel.getName(), channel);
+		return channel;
+	}
+
+	@Override
+	public IRCChannel removeChannel(String name) {
+		return channels.remove(name);
 	}
 }

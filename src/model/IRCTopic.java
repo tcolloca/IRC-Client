@@ -3,25 +3,24 @@ package model;
 public class IRCTopic {
 
 	private String topic;
-	private IRCUser lastModifier;
+	private IRCUser lastSetter;
 	private long lastModifiedTime;
 	
 	
-	IRCTopic(String topic, IRCUser lastModifier, long lastModifiedTime) {
+	IRCTopic(String topic, IRCUser lastSetter, long lastModifiedTime) {
 		super();
 		this.topic = topic;
-		this.lastModifier = lastModifier;
+		this.lastSetter = lastSetter;
 		this.lastModifiedTime = lastModifiedTime;
 	}
-
 
 	public String getTopic() {
 		return topic;
 	}
 
 
-	public IRCUser getLastModifier() {
-		return lastModifier;
+	public IRCUser getLastSetter() {
+		return lastSetter;
 	}
 
 

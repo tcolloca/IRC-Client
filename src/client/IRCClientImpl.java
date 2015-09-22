@@ -10,13 +10,16 @@ import java.util.List;
 import model.IRCChannel;
 import model.IRCDao;
 import model.IRCDaoImpl;
+import model.IRCUser;
 import parser.IRCMessage;
 import parser.IRCParser;
 import parser.IRCParserImpl;
 import reader.IRCReader;
 import reader.IRCReaderImpl;
+import util.ConnectionReplyValues;
 import util.IRCException;
 import util.IRCFrameworkErrorException;
+import util.IRCValues;
 import writer.IRCWriter;
 import writer.IRCWriterImpl;
 
@@ -41,7 +44,8 @@ import event.IRCEventListener;
  * 
  * @author Tomas
  */
-public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
+public class IRCClientImpl extends IRCEventAdapter implements IRCClient,
+		IRCValues, ConnectionReplyValues {
 
 	private static final int PORT = 6667;
 
@@ -53,6 +57,7 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 	private IRCEventDispatcher eventDispatcher;
 	private IRCDao dao;
 	private SocketChannel channel;
+	private IRCClientUser clientUser;
 
 	/**
 	 * @param config
@@ -69,25 +74,13 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 		writer = new IRCWriterImpl();
 		parser = new IRCParserImpl();
 		initializeEventDispatcher();
-		dao = new IRCDaoImpl(parser);
+		dao = new IRCDaoImpl(this, parser);
 		commandFactory = new IRCCommandFactoryImpl();
 		try {
 			channel = SocketChannel.open();
 			channel.configureBlocking(false);
 		} catch (IOException e) {
 			throw new IRCFrameworkErrorException();
-		}
-	}
-
-	private void initializeEventDispatcher() {
-		if (config.isMultiThread()) {
-			this.eventDispatcher = new IRCEventDispatcherMultiThread();
-		} else {
-			this.eventDispatcher = new IRCEventDispatcherSingleThread();
-		}
-		eventDispatcher.addListener(this);
-		for (IRCEventListener listener : config.getListeners()) {
-			eventDispatcher.addListener(listener);
 		}
 	}
 
@@ -105,10 +98,28 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 			if (command != null) {
 				eventDispatcher.onExecute(command);
 			}
-		} catch (InvalidCommandException e) {
+			// TODO : Change exception to catch to InvalidCommandException
+		} catch (Exception e) {
 			// TODO
 			// throw new IRCFrameworkErrorException();
 		}
+	}
+
+	@Override
+	public void sendCommand(IRCCommand command) {
+		try {
+			writer.write(channel, command.getMessage());
+		} catch (IRCException e) {
+			throw new IRCFrameworkErrorException();
+		}
+	}
+
+	@Override
+	public void addListener(IRCEventListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException();
+		}
+		eventDispatcher.addListener(listener);
 	}
 
 	@Override
@@ -118,6 +129,20 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
+	}
+
+	@Override
+	public void onConnectionReply(int replyNumber, List<String> parameters) {
+		switch (replyNumber) {
+		case RPL_WELCOME:
+			String[] splitWelcomeMsg = parameters.get(0).split(" ");
+			dao.addUser(splitWelcomeMsg[splitWelcomeMsg.length - 1]);
+			break;
+		}
+	}
+
+	@Override
+	public void onLogin() {
 		try {
 			List<IRCChannel> channels = getInitialChannels();
 			if (!channels.isEmpty()) {
@@ -126,6 +151,12 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
+	}
+
+	@Override
+	public void onNick(IRCUser user, String newNickname, String prevNickname) {
+		dao.removeUser(prevNickname);
+		dao.addUser(user);
 	}
 
 	private List<IRCChannel> getInitialChannels() {
@@ -155,7 +186,7 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 		int i = 0;
 		try {
 			while (!channel.finishConnect()) {
-				if (i % 1000 == 0) {
+				if (i++ % 10000 == 0) {
 					System.out.println("Trying to connect...");
 				}
 			}
@@ -178,19 +209,23 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient {
 		}
 	}
 
-	private void sendCommand(IRCCommand command) {
-		try {
-			writer.write(channel, command.getMessage());
-		} catch (IRCException e) {
-			throw new IRCFrameworkErrorException();
+	private void initializeEventDispatcher() {
+		if (config.isMultiThread()) {
+			this.eventDispatcher = new IRCEventDispatcherMultiThread();
+		} else {
+			this.eventDispatcher = new IRCEventDispatcherSingleThread();
+		}
+		eventDispatcher.addListener(this);
+		for (IRCEventListener listener : config.getListeners()) {
+			eventDispatcher.addListener(listener);
 		}
 	}
 
 	public static void main(String[] args) throws IOException, IRCException,
 			InterruptedException {
 		IRCClient client = new IRCClientImpl((new IRCConfiguration(
-				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt")));
-		System.out.println("run");
+				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"))
+				.setNickname("TomBot"));
 		client.run();
 	}
 }
