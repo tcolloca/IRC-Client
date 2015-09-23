@@ -1,17 +1,17 @@
 package command;
 
-import event.IRCEventListener;
-import model.IRCDao;
 import parser.IRCMessage;
+import event.IRCRawEventListener;
 
 public class CommandReplyCommand extends ReplyCommand {
 
-	public CommandReplyCommand(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
-		super(dao, ircMessage);
+	public CommandReplyCommand(IRCMessage ircMessage)
+			throws InvalidCommandException {
+		super(ircMessage);
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		listener.onCommandReply(getReplyNumber(), getParameters());
 	}
 }

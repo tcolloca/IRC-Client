@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.IRCChannelMode;
-import model.IRCModeAction;
-import model.IRCDao;
 import model.IRCMode;
+import model.IRCModeAction;
 import model.IRCUserMode;
 import util.IRCValues;
 
@@ -14,19 +13,19 @@ import command.InvalidCommandException;
 
 public class IRCModesParser implements IRCValues {
 
-	public static List<IRCModeAction> parseUserModeActions(IRCDao dao,
+	public static List<IRCModeAction> parseUserModeActions(
 			IRCParameters parameters) throws InvalidCommandException {
-		return parseModeActions(dao, parameters, true);
+		return parseModeActions(parameters, true);
 	}
 
 	public static List<IRCModeAction> parseChannelModeActions(
-			IRCDao dao, IRCParameters parameters)
-			throws InvalidCommandException {
-		return parseModeActions(dao, parameters, false);
+			IRCParameters parameters) throws InvalidCommandException {
+		return parseModeActions(parameters, false);
 	}
 
-	private static List<IRCModeAction> parseModeActions(IRCDao dao,
-			IRCParameters parameters, boolean isUserMode) throws InvalidCommandException {
+	private static List<IRCModeAction> parseModeActions(
+			IRCParameters parameters, boolean isUserMode)
+			throws InvalidCommandException {
 		int k = 0;
 		List<IRCModeAction> actions = new ArrayList<IRCModeAction>();
 		char[] charArr = parameters.getParameter(k++).toCharArray();
@@ -45,7 +44,7 @@ public class IRCModesParser implements IRCValues {
 				} else {
 					mode = IRCChannelMode.getMode(charArr[i]);
 				}
-				String[] params = parseParams(parameters, dao, mode, k);
+				String[] params = parseParams(parameters, mode, k);
 				k += params.length;
 				actions.add(new IRCModeAction(mode, currAction, params));
 			}
@@ -54,8 +53,8 @@ public class IRCModesParser implements IRCValues {
 		return actions;
 	}
 
-	private static String[] parseParams(IRCParameters parameters, IRCDao dao,
-			IRCMode mode, int k) throws InvalidCommandException {
+	private static String[] parseParams(IRCParameters parameters, IRCMode mode,
+			int k) throws InvalidCommandException {
 		String[] params = new String[mode.getParamsAmount()];
 		for (int j = 0; j < mode.getParamsAmount(); j++) {
 			String param = parameters.getParameter(k + j);

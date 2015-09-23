@@ -1,9 +1,12 @@
 package client;
 
-import command.IRCCommand;
-import event.IRCEventListener;
 import model.IRCUser;
 import util.IRCException;
+
+import command.IRCCommand;
+
+import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 public interface IRCClient {
 
@@ -35,7 +38,18 @@ public interface IRCClient {
 	public void sendCommand(IRCCommand command);
 
 	/**
-	 * Adds a listener for the IRCEvents dispatched by the IRCClient.
+	 * Adds a listener for the raw IRC events dispatched by the IRCClient.
+	 * 
+	 * @param listener
+	 *            Listener to be added.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If listener is null.
+	 */
+	public void addRawListener(IRCRawEventListener listener);
+
+	/**
+	 * Adds a listener for the IRC events dispatched by the IRCClient.
 	 * 
 	 * @param listener
 	 *            Listener to be added.

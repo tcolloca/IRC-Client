@@ -7,20 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import command.IRCCommand;
-import command.IRCCommandFactory;
-import command.IRCCommandFactoryImpl;
-import command.InvalidCommandException;
-import command.JoinCommand;
-import command.NickCommand;
-import command.PassCommand;
-import command.PongCommand;
-import command.UserCommand;
-import event.IRCEventAdapter;
-import event.IRCEventDispatcher;
-import event.IRCEventDispatcherMultiThread;
-import event.IRCEventDispatcherSingleThread;
-import event.IRCEventListener;
 import model.IRCChannel;
 import model.IRCDao;
 import model.IRCDaoImpl;
@@ -37,12 +23,31 @@ import util.IRCValues;
 import writer.IRCWriter;
 import writer.IRCWriterImpl;
 
+import command.IRCCommand;
+import command.IRCCommandFactory;
+import command.IRCCommandFactoryImpl;
+import command.InvalidCommandException;
+import command.JoinCommand;
+import command.NickCommand;
+import command.PassCommand;
+import command.PongCommand;
+import command.UserCommand;
+
+import event.IRCEventDispatcher;
+import event.IRCEventDispatcherMultiThread;
+import event.IRCEventDispatcherSingleThread;
+import event.IRCEventListener;
+import event.IRCRawEventAdapter;
+import event.IRCRawEventDispatcher;
+import event.IRCRawEventListener;
+
 /**
  * The main class of the IRC Connection framework.
  * 
  * @author Tomas
  */
-public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValues, IRCConnectionReplyValues {
+public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
+		IRCValues, IRCConnectionReplyValues {
 
 	private static final int PORT = 6667;
 
@@ -51,6 +56,7 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 	private IRCWriter writer;
 	private IRCParser parser;
 	private IRCCommandFactory commandFactory;
+	private IRCRawEventDispatcher rawEventDispatcher;
 	private IRCEventDispatcher eventDispatcher;
 	private IRCDao dao;
 	private SocketChannel channel;
@@ -71,8 +77,8 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 		reader = new IRCReaderImpl(this);
 		writer = new IRCWriterImpl();
 		parser = new IRCParserImpl();
-		initializeEventDispatcher();
 		dao = new IRCDaoImpl(this, parser);
+		initializeDispatchers();
 		commandFactory = new IRCCommandFactoryImpl();
 		try {
 			channel = SocketChannel.open();
@@ -92,9 +98,9 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 	public synchronized void feed(String message) {
 		IRCMessage ircMessage = parser.parse(message);
 		try {
-			IRCCommand command = commandFactory.build(dao, ircMessage);
+			IRCCommand command = commandFactory.build(ircMessage);
 			if (command != null) {
-				eventDispatcher.onExecute(command);
+				command.onExecute(rawEventDispatcher);
 			}
 			// TODO : Change exception to catch to InvalidCommandException
 		} catch (Exception e) {
@@ -110,6 +116,14 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 		} catch (IRCException e) {
 			throw new IRCFrameworkErrorException();
 		}
+	}
+
+	@Override
+	public void addRawListener(IRCRawEventListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException();
+		}
+		rawEventDispatcher.addListener(listener);
 	}
 
 	@Override
@@ -130,6 +144,9 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 
 	@Override
 	public void onPing(String server) {
+		if (server == null) {
+			throw new IllegalArgumentException();
+		}
 		try {
 			sendCommand(new PongCommand(server));
 		} catch (InvalidCommandException e) {
@@ -138,17 +155,38 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 	}
 
 	@Override
+	public void onJoin(String nickname, String channelName) {
+		if (nickname == null || channelName == null) {
+			throw new IllegalArgumentException();
+		}
+		IRCUser user = dao.getUser(nickname);
+		if (user == null) {
+			user = dao.addUser(nickname);
+		}
+		IRCChannel channel = dao.getChannel(channelName);
+		if (channel == null) {
+			channel = dao.addChannel(channelName);
+		}
+	}
+
+	@Override
+	public void onNick(String prevNickname, String newNickname) {
+		IRCUser user = dao.removeUser(prevNickname);
+		dao.addUser(user, newNickname);
+	}
+
+	@Override
 	public void onConnectionReply(int replyNumber, List<String> parameters) {
 		switch (replyNumber) {
 		case RPL_WELCOME:
 			String[] splitWelcomeMsg = parameters.get(0).split(" ");
 			dao.addUser(splitWelcomeMsg[splitWelcomeMsg.length - 1]);
+			onLogin();
 			break;
 		}
 	}
 
-	@Override
-	public void onLogin() {
+	private void onLogin() {
 		try {
 			List<IRCChannel> channels = getInitialChannels();
 			if (!channels.isEmpty()) {
@@ -157,12 +195,6 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
-	}
-
-	@Override
-	public void onNick(IRCUser user, String newNickname, String prevNickname) {
-		dao.removeUser(prevNickname);
-		dao.addUser(user);
 	}
 
 	private List<IRCChannel> getInitialChannels() {
@@ -208,27 +240,33 @@ public class IRCClientImpl extends IRCEventAdapter implements IRCClient, IRCValu
 				sendCommand(new PassCommand(config.getPassword()));
 			}
 			sendCommand(new NickCommand(config.getNickname()));
-			sendCommand(new UserCommand(config.getUsername(), config.getRealname()));
+			sendCommand(new UserCommand(config.getUsername(),
+					config.getRealname()));
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
 	}
 
-	private void initializeEventDispatcher() {
+	private void initializeDispatchers() {
 		if (config.isMultiThread()) {
 			this.eventDispatcher = new IRCEventDispatcherMultiThread();
 		} else {
 			this.eventDispatcher = new IRCEventDispatcherSingleThread();
 		}
-		eventDispatcher.addListener(this);
 		for (IRCEventListener listener : config.getListeners()) {
 			eventDispatcher.addListener(listener);
 		}
+
+		this.rawEventDispatcher = new IRCRawEventDispatcher(eventDispatcher,
+				dao);
+		rawEventDispatcher.addListener(this);
 	}
 
-	public static void main(String[] args) throws IOException, IRCException, InterruptedException {
-		IRCClient client = new IRCClientImpl((new IRCConfiguration("irc.mibbit.net"))
-				.setInitialChannels(Arrays.asList("#guiamt")).setNickname("TomBot"));
+	public static void main(String[] args) throws IOException, IRCException,
+			InterruptedException {
+		IRCClient client = new IRCClientImpl((new IRCConfiguration(
+				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"))
+				.setNickname("TomBot"));
 		client.run();
 	}
 }

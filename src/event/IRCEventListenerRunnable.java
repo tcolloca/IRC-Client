@@ -5,19 +5,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import util.IRCFrameworkErrorException;
 
-import command.IRCCommand;
+import command.event.IRCEvent;
 
 /**
- * Saves the different commands that haven been executed and every time the
+ * Saves the different events that haven been dispatched and every time the
  * listener is available it calls the corresponding method of the listener with
- * a new command from the queue.
+ * a new event from the queue.
  * 
  * @author Tomas
  */
 public class IRCEventListenerRunnable implements Runnable {
 
 	private IRCEventListener listener;
-	private BlockingQueue<IRCCommand> commandsQueue;
+	private BlockingQueue<IRCEvent> eventsQueue;
 
 	/**
 	 * @param listener
@@ -29,23 +29,24 @@ public class IRCEventListenerRunnable implements Runnable {
 			throw new IllegalArgumentException();
 		}
 		this.listener = listener;
-		this.commandsQueue = new LinkedBlockingQueue<IRCCommand>();
+		this.eventsQueue = new LinkedBlockingQueue<IRCEvent>();
 	}
 
 	/**
-	 * Pushes the command to the queue of pending commands that have been read.
+	 * Pushes the IRCEvent event to the queue of pending IRCEvent event related
+	 * to commands that have been read.
 	 * 
-	 * @param command
-	 * @throws {@link IllegalArgumentException} If command is null.
+	 * @param event
+	 * @throws {@link IllegalArgumentException} If IRCEvent event is null.
 	 * @throws IRCFrameworkErrorException
 	 *             If a thread related error occurs.
 	 */
-	void push(IRCCommand command) {
-		if (command == null) {
+	void push(IRCEvent event) {
+		if (event == null) {
 			throw new IllegalArgumentException();
 		}
 		try {
-			commandsQueue.put(command);
+			eventsQueue.put(event);
 		} catch (Exception e) {
 			throw new IRCFrameworkErrorException();
 		}
@@ -54,10 +55,10 @@ public class IRCEventListenerRunnable implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			IRCCommand command;
+			IRCEvent event;
 			try {
-				command = commandsQueue.take();
-				command.onExecute(listener);
+				event = eventsQueue.take();
+				event.onExecute(listener);
 			} catch (InterruptedException e) {
 				throw new IRCFrameworkErrorException();
 			}

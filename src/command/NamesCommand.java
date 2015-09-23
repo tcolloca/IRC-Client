@@ -3,12 +3,12 @@ package command;
 import java.util.ArrayList;
 import java.util.List;
 
-import event.IRCEventListener;
 import model.IRCChannel;
 import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
 import util.StringConverter;
+import event.IRCRawEventListener;
 
 /**
  * Lists all nicknames that are visible to him.
@@ -42,7 +42,8 @@ public class NamesCommand extends IRCCommandImpl {
 	 * @throws InvalidCommandException
 	 *             If any of the channels is null.
 	 */
-	public NamesCommand(List<IRCChannel> channels) throws InvalidCommandException {
+	public NamesCommand(List<IRCChannel> channels)
+			throws InvalidCommandException {
 		this(channels, null);
 	}
 
@@ -55,19 +56,22 @@ public class NamesCommand extends IRCCommandImpl {
 	 * @throws InvalidCommandException
 	 *             If any of the channels is null.
 	 */
-	public NamesCommand(List<IRCChannel> channels, String target) throws InvalidCommandException {
-		super(new IRCMessageImpl(NAMES_COMMAND, channels != null
-				? StringConverter.stringfyList(channels, "" + IN_PARAM_SEPARATOR, "", "", new ChannelNameFunction())
-				: null, target));
+	public NamesCommand(List<IRCChannel> channels, String target)
+			throws InvalidCommandException {
+		super(new IRCMessageImpl(NAMES_COMMAND,
+				channels != null ? StringConverter
+						.stringfyList(channels, "" + IN_PARAM_SEPARATOR, "",
+								"", new ChannelNameFunction()) : null, target));
 	}
 
-	public NamesCommand(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
+	public NamesCommand(IRCDao dao, IRCMessage ircMessage)
+			throws InvalidCommandException {
 		super(ircMessage);
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

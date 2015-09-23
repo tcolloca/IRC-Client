@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-import command.IRCCommand;
+import command.event.IRCEvent;
 
 public class IRCEventDispatcherMultiThread implements IRCEventDispatcher {
 
@@ -34,12 +34,12 @@ public class IRCEventDispatcherMultiThread implements IRCEventDispatcher {
 	}
 
 	@Override
-	public void onExecute(IRCCommand command) {
-		if (command == null) {
+	public void onExecute(IRCEvent event) {
+		if (event == null) {
 			throw new IllegalArgumentException();
 		}
 		for (IRCEventListenerRunnable listenerRunnable : listenerRunnables) {
-			listenerRunnable.push(command);
+			listenerRunnable.push(event);
 		}
 	}
 }

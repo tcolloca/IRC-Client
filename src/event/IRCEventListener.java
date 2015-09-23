@@ -18,8 +18,7 @@ public interface IRCEventListener {
 	 * 
 	 * @param server
 	 *            Server that sent the PING.
-	 * @throws {@link
-	 *             IllegalArgumentException} If server is null.
+	 * @throws {@link IllegalArgumentException} If server is null.
 	 */
 	public void onPing(String server);
 
@@ -30,20 +29,16 @@ public interface IRCEventListener {
 
 	/**
 	 * This method is called when user has changed it's nickname to newNickname.
-	 * If user is null, then it was the client who changed it's nick.
+	 * The user has the new nickname.
 	 * 
 	 * @param user
-	 *            User that has changed its nickname (It will have the nickname
-	 *            changed).
-	 * @param newNickname
-	 *            The new nickname of the user.
+	 *            User that has changed its nickname.
 	 * @param prevNickname
 	 *            The previous nickname of the user.
 	 * 
-	 * @throws {@link
-	 *             IllegalArgumentException} If any of the arguments is null.
+	 * @throws {@link IllegalArgumentException} If any of the arguments is null.
 	 */
-	public void onNick(IRCUser user, String newNickname, String prevNickname);
+	public void onNick(IRCUser user, String prevNickname);
 
 	/**
 	 * This method is called when a NOTICE has been sent to a channel where the
@@ -54,8 +49,7 @@ public interface IRCEventListener {
 	 *            directly sent to the client.
 	 * @param message
 	 *            Message of the notice.
-	 * @throws {@link
-	 *             IllegalArgumentException} If any of the arguments is null.
+	 * @throws {@link IllegalArgumentException} If any of the arguments is null.
 	 */
 	void onNotice(IRCChannel channel, String message);
 
@@ -66,8 +60,7 @@ public interface IRCEventListener {
 	 *            User that joined the channel.
 	 * @param channel
 	 *            Channel being joined by the user.
-	 * @throws {@link
-	 *             IllegalArgumentException} If user or channel are null.
+	 * @throws {@link IllegalArgumentException} If user or channel are null.
 	 */
 	public void onJoin(IRCUser user, IRCChannel channel);
 
@@ -78,9 +71,8 @@ public interface IRCEventListener {
 	 *            User that has changed modes.
 	 * @param userModeActions
 	 *            Mode changes of the user.
-	 * @throws {@link
-	 *             IllegalArgumentException} If channel or userModeActions are
-	 *             null.
+	 * @throws {@link IllegalArgumentException} If channel or userModeActions
+	 *         are null.
 	 */
 	public void onMode(IRCUser user, List<IRCModeAction> userModeActions);
 
@@ -91,11 +83,11 @@ public interface IRCEventListener {
 	 *            Channel that has changed modes.
 	 * @param channelModeActions
 	 *            Mode changes of the channel.
-	 * @throws {@link
-	 *             IllegalArgumentException} If channel or channelModeActions
-	 *             are null.
+	 * @throws {@link IllegalArgumentException} If channel or channelModeActions
+	 *         are null.
 	 */
-	public void onMode(IRCChannel channel, List<IRCModeAction> channelModeActions);
+	public void onMode(IRCChannel channel,
+			List<IRCModeAction> channelModeActions);
 
 	/**
 	 * This method is called when the server replies with a connection related

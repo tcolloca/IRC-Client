@@ -2,7 +2,7 @@ package command;
 
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * A normal user uses the OPER command to obtain operator privileges.
@@ -12,7 +12,7 @@ import event.IRCEventListener;
 public class OperCommand extends IRCCommandImpl {
 
 	public static final String OPER_COMMAND = "OPER";
-	
+
 	/**
 	 * @param username
 	 *            Username of the operator.
@@ -35,7 +35,7 @@ public class OperCommand extends IRCCommandImpl {
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

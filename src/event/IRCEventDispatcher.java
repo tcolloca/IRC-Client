@@ -1,6 +1,7 @@
 package event;
 
 import command.IRCCommand;
+import command.event.IRCEvent;
 
 public interface IRCEventDispatcher {
 
@@ -14,13 +15,13 @@ public interface IRCEventDispatcher {
 	public void addListener(IRCEventListener listener);
 
 	/**
-	 * This method is called when a command was read, and it should end calling
-	 * the onExecute method from {@link IRCCommand} passing all of its listeners
-	 * as parameters.
+	 * This method is called when a command related with the event was read, and
+	 * it should end calling the onExecute method from {@link IRCCommand}
+	 * passing all of its listeners as parameters.
 	 * 
-	 * @param command
+	 * @param event
 	 * @throws IllegalArgumentException
 	 *             If command is null.
 	 */
-	public void onExecute(IRCCommand command);
+	public void onExecute(IRCEvent event);
 }

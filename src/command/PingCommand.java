@@ -1,8 +1,7 @@
 package command;
 
-import model.IRCDao;
 import parser.IRCMessage;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * This command represents a PING command sent by the server.
@@ -16,8 +15,7 @@ public class PingCommand extends IRCCommandImpl {
 
 	private String server;
 
-	public PingCommand(IRCDao dao, IRCMessage ircMessage)
-			throws InvalidCommandException {
+	public PingCommand(IRCMessage ircMessage) throws InvalidCommandException {
 		super(ircMessage);
 		server = ircMessage.getParameter(SERVER_INDEX);
 		if (server == null) {
@@ -26,7 +24,7 @@ public class PingCommand extends IRCCommandImpl {
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		if (listener == null) {
 			throw new IllegalArgumentException();
 		}

@@ -1,21 +1,17 @@
 package command;
 
-import event.IRCEventListener;
-import model.IRCDao;
 import parser.IRCMessage;
-import util.IRCConnectionReplyValues;
+import event.IRCRawEventListener;
 
-public class ConnectionReplyCommand extends ReplyCommand implements IRCConnectionReplyValues {
+public class ConnectionReplyCommand extends ReplyCommand {
 
-	public ConnectionReplyCommand(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
-		super(dao, ircMessage);
+	public ConnectionReplyCommand(IRCMessage ircMessage)
+			throws InvalidCommandException {
+		super(ircMessage);
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		listener.onConnectionReply(getReplyNumber(), getParameters());
-		if (getReplyNumber() == RPL_WELCOME) {
-			listener.onLogin();
-		}
 	}
 }

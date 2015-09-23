@@ -1,12 +1,13 @@
 package command;
 
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 public interface IRCCommand {
 
 	/**
-	 * Called when the command was read, and calls the corresponding method of
-	 * the IRCEventListener if there is any.
+	 * This method is called when the command related to the event was read, and
+	 * calls the corresponding method of the IRCRawEventListener if there is
+	 * any.
 	 * 
 	 * @param listener
 	 * @throws IllegalArgumentException
@@ -14,7 +15,7 @@ public interface IRCCommand {
 	 * @throws UnsupportedOperationException
 	 *             If there is no associated method for the listener.
 	 */
-	public abstract void onExecute(IRCEventListener listener);
+	public abstract void onExecute(IRCRawEventListener listener);
 
 	/**
 	 * Returns the message that represents the IRCCommand.

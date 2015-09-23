@@ -1,9 +1,8 @@
 package command;
 
-import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * Sets the password for the nickname when connecting.
@@ -13,7 +12,7 @@ import event.IRCEventListener;
 public class PassCommand extends IRCCommandImpl {
 
 	public static final String PASS_COMMAND = "PASS";
-	
+
 	/**
 	 * @param password
 	 *            Password of the nickname.
@@ -27,14 +26,14 @@ public class PassCommand extends IRCCommandImpl {
 		}
 	}
 
-	public PassCommand(IRCDao dao, IRCMessage ircMessage)
+	public PassCommand(IRCMessage ircMessage)
 			throws InvalidCommandException {
 		super(ircMessage);
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

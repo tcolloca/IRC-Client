@@ -2,7 +2,6 @@ package command;
 
 import java.util.List;
 
-import model.IRCDao;
 import parser.IRCMessage;
 
 public abstract class ReplyCommand extends IRCCommandImpl {
@@ -10,7 +9,7 @@ public abstract class ReplyCommand extends IRCCommandImpl {
 	private int replyNumber;
 	private List<String> parameters;
 
-	public ReplyCommand(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
+	public ReplyCommand(IRCMessage ircMessage) throws InvalidCommandException {
 		super(ircMessage);
 		try {
 			replyNumber = Integer.valueOf(ircMessage.getCommand());

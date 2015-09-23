@@ -1,10 +1,8 @@
 package command;
 
-import model.IRCChannel;
-import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * This command sends a notice, that works similar to a private message. When
@@ -19,7 +17,7 @@ public class NoticeCommand extends IRCCommandImpl {
 	private static final int MSGTARGET_INDEX = 0;
 	private static final int MESSAGE_INDEX = 1;
 
-	private IRCChannel channel;
+	private String target;
 	private String message;
 
 	/**
@@ -38,24 +36,17 @@ public class NoticeCommand extends IRCCommandImpl {
 		}
 	}
 
-	public NoticeCommand(IRCDao dao, IRCMessage ircMessage)
-			throws InvalidCommandException {
+	public NoticeCommand(IRCMessage ircMessage) throws InvalidCommandException {
 		super(ircMessage);
-		String msgtarget = ircMessage.getParameter(MSGTARGET_INDEX);
+		this.target = ircMessage.getParameter(MSGTARGET_INDEX);
 		this.message = ircMessage.getParameter(MESSAGE_INDEX);
-		if (msgtarget == null || message == null) {
-			throw new InvalidCommandException();
-		}
-		if (dao.hasChannel(msgtarget)) {
-			channel = dao.getChannel(msgtarget);
-		}
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		if (listener == null) {
 			throw new IllegalArgumentException();
 		}
-		listener.onNotice(channel, message);
+		listener.onNotice(target, message);
 	}
 }

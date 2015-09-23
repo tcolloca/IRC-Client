@@ -42,11 +42,14 @@ public interface IRCDao {
 	 * 
 	 * @param user
 	 *            User to be added.
+	 * @param nickname
+	 *            Nickname of the user.
 	 * @return The IRCUser that has been created.
 	 * @throws IllegalArgumentException
-	 *             If user is null or if it already exists that user in the dao.
+	 *             If user or nickname is null or if it already exists that user
+	 *             in the dao.
 	 */
-	public IRCUser addUser(IRCUser user);
+	public IRCUser addUser(IRCUser user, String nickname);
 
 	/**
 	 * Returns the IRCUser that has that userName

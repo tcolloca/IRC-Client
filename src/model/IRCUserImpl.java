@@ -1,9 +1,11 @@
 package model;
 
 import util.IRCValues;
-import event.IRCEventAdapter;
+import client.IRCClient;
+import event.IRCRawEventAdapter;
 
-public class IRCUserImpl extends IRCEventAdapter implements IRCUser, IRCValues {
+public class IRCUserImpl extends IRCRawEventAdapter implements IRCUser,
+		IRCValues {
 
 	private String nickname;
 	private String username;
@@ -19,14 +21,17 @@ public class IRCUserImpl extends IRCEventAdapter implements IRCUser, IRCValues {
 	private IRCUserFlags flags;
 
 	/**
+	 * @param client
+	 *            IRCClient that has a reference to this channel.
 	 * @param nickname
 	 * @param username
 	 * @param hostname
 	 * @throws IllegalArgumentException
-	 *             If nickname is null.
+	 *             If client or nickname are null.
 	 */
-	public IRCUserImpl(String nickname, String username, String hostname) {
-		if (nickname == null) {
+	public IRCUserImpl(IRCClient client, String nickname, String username,
+			String hostname) {
+		if (client == null || nickname == null) {
 			throw new IllegalArgumentException();
 		}
 		this.nickname = nickname;
@@ -36,6 +41,7 @@ public class IRCUserImpl extends IRCEventAdapter implements IRCUser, IRCValues {
 		idleTime = -1;
 		channels = new IRCUserChannelsImpl();
 		flags = new IRCUserFlagsImpl();
+		client.addRawListener(this);
 	}
 
 	@Override
@@ -133,8 +139,11 @@ public class IRCUserImpl extends IRCEventAdapter implements IRCUser, IRCValues {
 	}
 
 	@Override
-	public void onNick(IRCUser user, String newNickname, String prevNickname) {
-		if (user.equals(this)) {
+	public void onNick(String prevNickname, String newNickname) {
+		if (prevNickname == null || newNickname == null) {
+			throw new IllegalArgumentException();
+		}
+		if (prevNickname.equals(getNickname())) {
 			this.nickname = newNickname;
 		}
 	}

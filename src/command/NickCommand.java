@@ -1,10 +1,9 @@
 package command;
 
 import model.IRCDao;
-import model.IRCUser;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * Is used to give user a nickname or change the existing one. When this command
@@ -18,8 +17,8 @@ public class NickCommand extends IRCCommandImpl {
 	public static final String NICK_COMMAND = "NICK";
 	private static final int NICK_INDEX = 0;
 
-	private IRCUser user;
-	private String nickname;
+	private String prevNickname;
+	private String newNickname;
 
 	/**
 	 * @param nickname
@@ -37,22 +36,15 @@ public class NickCommand extends IRCCommandImpl {
 	public NickCommand(IRCDao dao, IRCMessage ircMessage)
 			throws InvalidCommandException {
 		super(ircMessage);
-		String userName = ircMessage.getPrefix().getString();
-		this.user = dao.getUser(userName);
-		if (user == null) {
-			throw new InvalidCommandException();
-		}
-		nickname = ircMessage.getParameter(NICK_INDEX);
-		if (nickname == null) {
-			throw new InvalidCommandException();
-		}
+		prevNickname = ircMessage.getPrefix().getString();
+		newNickname = ircMessage.getParameter(NICK_INDEX);
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		if (listener == null) {
 			throw new IllegalArgumentException();
 		}
-		listener.onNick(user, nickname, user.getNickname());
+		listener.onNick(prevNickname, newNickname);
 	}
 }

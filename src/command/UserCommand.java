@@ -1,9 +1,8 @@
 package command;
 
-import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
-import event.IRCEventListener;
+import event.IRCRawEventListener;
 
 /**
  * This command must be used to register with the given username and realname.
@@ -13,7 +12,7 @@ import event.IRCEventListener;
 public class UserCommand extends IRCCommandImpl {
 
 	public static final String USER_COMMAND = "USER";
-	
+
 	/**
 	 * Creates an UserCommand with mode 0.
 	 * 
@@ -43,14 +42,13 @@ public class UserCommand extends IRCCommandImpl {
 		}
 	}
 
-	public UserCommand(IRCDao dao, IRCMessage ircMessage)
-			throws InvalidCommandException {
+	public UserCommand(IRCMessage ircMessage) throws InvalidCommandException {
 		super(ircMessage);
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void onExecute(IRCEventListener listener) {
+	public void onExecute(IRCRawEventListener listener) {
 		throw new UnsupportedOperationException();
 	}
 }

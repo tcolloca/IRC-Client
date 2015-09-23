@@ -2,12 +2,13 @@ package model;
 
 import java.util.List;
 
-import client.IRCClient;
-import event.IRCEventAdapter;
 import util.IRCCommandReplyValues;
 import util.IRCValues;
+import client.IRCClient;
+import event.IRCRawEventAdapter;
 
-public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCValues, IRCCommandReplyValues {
+public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
+		IRCValues, IRCCommandReplyValues {
 
 	private IRCClient client;
 
@@ -55,7 +56,7 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 		this.users = new IRCChannelUsersImpl(this);
 		this.modes = new IRCChannelModesImpl(this);
 		this.masks = new IRCChannelMasksImpl(this);
-		client.addListener(this);
+		client.addRawListener(this);
 	}
 
 	@Override
@@ -185,12 +186,12 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 	}
 
 	@Override
-	public void onJoin(IRCUser user, IRCChannel channel) {
-		if (user == null || channel == null) {
+	public void onJoin(String nickname, String channelName) {
+		if (nickname == null || channelName == null) {
 			throw new IllegalArgumentException();
 		}
-		if (channel.equals(this)) {
-			users.addNormalUser(user);
+		if (channelName.equals(getName()) && users.getNormalUsers() != null) {
+			users.addNormalUser(client.getUser(nickname));
 		}
 	}
 
@@ -202,12 +203,13 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 	}
 
 	@Override
-	public void onMode(IRCChannel channel, List<IRCModeAction> channelModeActions) {
-		if (channel == null || channelModeActions == null) {
+	public void onMode(String name,
+			List<IRCModeAction> modeActions) {
+		if (name == null || modeActions == null) {
 			throw new IllegalArgumentException();
 		}
-		if (channel.equals(this)) {
-			for (IRCModeAction modeAction : channelModeActions) {
+		if (name.equals(getName())) {
+			for (IRCModeAction modeAction : modeActions) {
 				if (modeAction == null) {
 					throw new IllegalArgumentException();
 				}
@@ -247,7 +249,8 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 		}
 	}
 
-	private void changeUser(IRCChannelMode mode, String[] parameters, char action) {
+	private void changeUser(IRCChannelMode mode, String[] parameters,
+			char action) {
 		if (parameters.length < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -298,7 +301,8 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 		}
 	}
 
-	private void changeMask(IRCChannelMode mode, String[] parameters, char action) {
+	private void changeMask(IRCChannelMode mode, String[] parameters,
+			char action) {
 		if (parameters.length < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -343,7 +347,8 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 		}
 	}
 
-	private void changeLimit(IRCChannelMode mode, String[] parameters, char action) {
+	private void changeLimit(IRCChannelMode mode, String[] parameters,
+			char action) {
 		if (parameters.length < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -359,7 +364,8 @@ public class IRCChannelImpl extends IRCEventAdapter implements IRCChannel, IRCVa
 		}
 	}
 
-	private void changeFloodLimit(IRCChannelMode mode, String[] parameters, char action) {
+	private void changeFloodLimit(IRCChannelMode mode, String[] parameters,
+			char action) {
 		if (parameters.length < 1) {
 			throw new IllegalArgumentException();
 		}

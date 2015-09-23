@@ -3,7 +3,7 @@ package event;
 import java.util.ArrayList;
 import java.util.List;
 
-import command.IRCCommand;
+import command.event.IRCEvent;
 
 public class IRCEventDispatcherSingleThread implements IRCEventDispatcher {
 
@@ -23,12 +23,12 @@ public class IRCEventDispatcherSingleThread implements IRCEventDispatcher {
 	}
 
 	@Override
-	public void onExecute(IRCCommand command) {
-		if (command == null) {
+	public void onExecute(IRCEvent event) {
+		if (event == null) {
 			throw new IllegalArgumentException();
 		}
 		for (IRCEventListener listener : listeners) {
-			command.onExecute(listener);
+			event.onExecute(listener);
 		}
 	}
 }

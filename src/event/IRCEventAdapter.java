@@ -22,7 +22,7 @@ public class IRCEventAdapter implements IRCEventListener {
 	}
 
 	@Override
-	public void onNick(IRCUser user, String newNickname, String prevNickname) {
+	public void onNick(IRCUser user, String prevNickname) {
 	}
 
 	@Override

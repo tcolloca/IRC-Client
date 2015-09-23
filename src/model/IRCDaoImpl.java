@@ -52,17 +52,17 @@ public class IRCDaoImpl implements IRCDao {
 		String nickname = parser.parseNickname(userName);
 		String username = parser.parseUsername(userName);
 		String hostname = parser.parseHostname(userName);
-		IRCUser user = new IRCUserImpl(nickname, username, hostname);
+		IRCUser user = new IRCUserImpl(client, nickname, username, hostname);
 		users.put(nickname, user);
 		return user;
 	}
 
 	@Override
-	public IRCUser addUser(IRCUser user) {
-		if (user == null || users.containsValue(user)) {
+	public IRCUser addUser(IRCUser user, String nickname) {
+		if (user == null || users.containsValue(user) || nickname == null) {
 			throw new IllegalArgumentException();
 		}
-		users.put(user.getNickname(), user);
+		users.put(nickname, user);
 		return user;
 	}
 

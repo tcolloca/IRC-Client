@@ -3,7 +3,6 @@ package command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import model.IRCDao;
 import parser.IRCMessage;
 import util.IRCFrameworkErrorException;
 
@@ -16,20 +15,24 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	private static final String COMMAND_REPLY = "CommandReply";
 
 	@Override
-	public IRCCommand build(IRCDao dao, IRCMessage ircMessage) throws InvalidCommandException {
-		if (dao == null || ircMessage == null) {
+	public IRCCommand build(IRCMessage ircMessage)
+			throws InvalidCommandException {
+		if (ircMessage == null) {
 			throw new IllegalArgumentException();
 		}
 		if (ircMessage.getCommand() == null) {
 			throw new InvalidCommandException();
 		}
 		if (ircMessage.getCommand().matches(NUMERIC_RESPONSE)) {
-			return getInstance(getReplyClassName(ircMessage.getCommand()), dao, ircMessage);
+			return getInstance(getReplyClassName(ircMessage.getCommand()),
+					ircMessage);
 		}
-		return getInstance(getCommandClassName(ircMessage.getCommand()), dao, ircMessage);
+		return getInstance(getCommandClassName(ircMessage.getCommand()),
+				ircMessage);
 	}
 
-	private String getReplyClassName(String replyNumber) throws InvalidCommandException {
+	private String getReplyClassName(String replyNumber)
+			throws InvalidCommandException {
 		Integer number = Integer.valueOf(replyNumber);
 		if (0 <= number && number < 100) {
 			return LOCATION + "." + CONNECTION_REPLY + COMMAND;
@@ -40,17 +43,19 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	}
 
 	private String getCommandClassName(String mode) {
-		String upperCaseMode = mode.substring(0, 1).toUpperCase() + mode.substring(1).toLowerCase();
+		String upperCaseMode = mode.substring(0, 1).toUpperCase()
+				+ mode.substring(1).toLowerCase();
 		String simpleClassName = upperCaseMode + COMMAND;
 		return LOCATION + "." + simpleClassName;
 	}
 
-	private IRCCommand getInstance(String className, IRCDao dao, IRCMessage message) throws InvalidCommandException {
+	private IRCCommand getInstance(String className, IRCMessage message)
+			throws InvalidCommandException {
 		try {
 			Class<? extends IRCCommand> clazz = getIRCCommandClass(className);
 			Constructor<? extends IRCCommand> constructor;
-			constructor = clazz.getConstructor(IRCDao.class, IRCMessage.class);
-			return constructor.newInstance(dao, message);
+			constructor = clazz.getConstructor(IRCMessage.class);
+			return constructor.newInstance(message);
 		} catch (InvocationTargetException e) {
 			System.out.println("Couldn't load command " + className);
 			throw new InvalidCommandException();
@@ -65,7 +70,8 @@ public class IRCCommandFactoryImpl implements IRCCommandFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends IRCCommand> getIRCCommandClass(String className) throws InvalidCommandException {
+	private Class<? extends IRCCommand> getIRCCommandClass(String className)
+			throws InvalidCommandException {
 		try {
 			return (Class<IRCCommand>) Class.forName(className);
 		} catch (ClassNotFoundException e) {
