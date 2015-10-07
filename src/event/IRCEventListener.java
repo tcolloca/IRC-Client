@@ -65,6 +65,19 @@ public interface IRCEventListener {
 	public void onJoin(IRCUser user, IRCChannel channel);
 
 	/**
+	 * This method is called when the user leaves the channel.
+	 * 
+	 * @param user
+	 *            User that leaves the channel.
+	 * @param channel
+	 *            Channel being left by the user.
+	 * @param message
+	 *            Optional message written by the message.
+	 * @throws {@link IllegalArgumentException} If user or channel are null.
+	 */
+	public void onPart(IRCUser user, IRCChannel channel, String message);
+
+	/**
 	 * This method is called when the modes of an user are changed.
 	 * 
 	 * @param user
@@ -88,6 +101,47 @@ public interface IRCEventListener {
 	 */
 	public void onMode(IRCChannel channel,
 			List<IRCModeAction> channelModeActions);
+
+	/**
+	 * This method is called when a message has been sent (private or through
+	 * channel).
+	 * 
+	 * @param sender
+	 *            Sender of the message.
+	 * @param message
+	 *            Message being sent.
+	 * @throws IllegalArgumentException
+	 *             If any of the arguments is null.
+	 */
+	public void onMessage(IRCUser sender, String message);
+
+	/**
+	 * This method is called when a message has been sent through a channel.
+	 * 
+	 * @param sender
+	 *            Sender of the message.
+	 * @param channel
+	 *            Channel where the message was sent.
+	 * @param message
+	 *            Message being sent.
+	 * @throws IllegalArgumentException
+	 *             If any of the arguments is null.
+	 */
+	public void onChannelMessage(IRCUser sender, IRCChannel channel,
+			String message);
+
+	/**
+	 * This method is called when a message has been sent privately to the
+	 * client.
+	 * 
+	 * @param sender
+	 *            Sender of the message.
+	 * @param message
+	 *            Message being sent.
+	 * @throws IllegalArgumentException
+	 *             If any of the arguments is null.
+	 */
+	public void onPrivateMessage(IRCUser sender, String message);
 
 	/**
 	 * This method is called when the server replies with a connection related

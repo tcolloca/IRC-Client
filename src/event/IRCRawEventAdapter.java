@@ -21,9 +21,17 @@ public class IRCRawEventAdapter implements IRCRawEventListener {
 	@Override
 	public void onJoin(String nickname, String channelName) {
 	}
+	
+	@Override
+	public void onPart(String nickname, String channelName, String message) {
+	}
 
 	@Override
 	public void onMode(String name, List<IRCModeAction> modeActions) {
+	}
+
+	@Override
+	public void onMessage(String sender, String msgtarget, String message) {
 	}
 
 	@Override
@@ -33,5 +41,4 @@ public class IRCRawEventAdapter implements IRCRawEventListener {
 	@Override
 	public void onCommandReply(int replyNumber, List<String> parameters) {
 	}
-
 }

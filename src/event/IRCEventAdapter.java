@@ -34,11 +34,29 @@ public class IRCEventAdapter implements IRCEventListener {
 	}
 
 	@Override
+	public void onPart(IRCUser user, IRCChannel channel, String message) {
+	}
+
+	@Override
 	public void onMode(IRCUser user, List<IRCModeAction> userModeActions) {
 	}
 
 	@Override
-	public void onMode(IRCChannel channel, List<IRCModeAction> channelModeActions) {
+	public void onMode(IRCChannel channel,
+			List<IRCModeAction> channelModeActions) {
+	}
+
+	@Override
+	public void onMessage(IRCUser sender, String message) {
+	}
+
+	@Override
+	public void onChannelMessage(IRCUser sender, IRCChannel channel,
+			String message) {
+	}
+
+	@Override
+	public void onPrivateMessage(IRCUser sender, String message) {
 	}
 
 	@Override

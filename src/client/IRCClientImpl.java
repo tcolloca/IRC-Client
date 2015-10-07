@@ -29,10 +29,12 @@ import command.JoinCommand;
 import command.NickCommand;
 import command.PassCommand;
 import command.PongCommand;
+import command.PrivmsgCommand;
 import command.UserCommand;
 import command.reply.IRCCommandFactoryImpl;
 import command.reply.IRCReplyFactory;
 
+import event.IRCEventAdapter;
 import event.IRCEventDispatcher;
 import event.IRCEventDispatcherMultiThread;
 import event.IRCEventDispatcherSingleThread;
@@ -74,8 +76,8 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 			throw new IllegalArgumentException();
 		}
 		this.config = config;
-		reader = new IRCReaderImpl(this);
-		writer = new IRCWriterImpl();
+		reader = new IRCReaderImpl(this, config.getCharset());
+		writer = new IRCWriterImpl(config.getCharset());
 		parser = new IRCParserImpl();
 		dao = new IRCDaoImpl(this, parser);
 		initializeDispatchers();
@@ -144,11 +146,7 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 
 	@Override
 	public IRCUser getOrAddUser(String userName) {
-		IRCUser user = dao.getUser(userName);
-		if (user == null) {
-			user = dao.addUser(userName);
-		}
-		return user;
+		return dao.getOrAddUser(userName);
 	}
 
 	@Override
@@ -273,6 +271,18 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 		IRCClient client = new IRCClientImpl((new IRCConfiguration(
 				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"),
 				Arrays.asList("lalala")).setNickname("TomBot"));
+		client.addListener(new IRCEventAdapter() {
+			@Override
+			public void onMessage(IRCUser sender, String message) {
+				try {
+					client.sendCommand(new PrivmsgCommand("#guiamt", sender
+							+ " dijo: " + message));
+				} catch (InvalidCommandException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		client.run();
 	}
 }

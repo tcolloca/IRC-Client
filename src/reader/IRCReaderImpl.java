@@ -3,6 +3,7 @@ package reader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 
 import util.IRCException;
 import util.IRCValues;
@@ -18,24 +19,31 @@ import client.IRCClientImpl;
 public class IRCReaderImpl implements IRCReader, IRCValues {
 
 	private static final char NULL = '\0';
-	private static final int BUFFER_SIZE = 10;
+	private static final int BUFFER_SIZE = 512;
 
 	private IRCClient ircClient;
-	private StringBuilder messageBuilder;
+	private Charset charset;
+	private byte[] byteBuffer;
+	private int index;
 	private boolean keepReading;
 
 	/**
 	 * @param ircClient
 	 *            The IRCClient that created this instance.
+	 * @param charset
+	 *            Charset of the messages being written.
 	 * @throws IllegalArgumentException
-	 *             If ircClient is null.
+	 *             If ircClient or charset are null.
 	 */
-	public IRCReaderImpl(IRCClient ircClient) {
+	public IRCReaderImpl(IRCClient ircClient, Charset charset) {
 		if (ircClient == null) {
 			throw new IllegalArgumentException();
 		}
 		this.ircClient = ircClient;
-		this.messageBuilder = new StringBuilder();
+		this.charset = charset;
+
+		this.byteBuffer = new byte[MSG_MAX_SIZE];
+		this.index = 0;
 	}
 
 	@Override
@@ -67,11 +75,14 @@ public class IRCReaderImpl implements IRCReader, IRCValues {
 			if ((char) b == NULL) {
 				continue;
 			}
-			messageBuilder.append((char) b);
-			if (messageBuilder.toString().endsWith(MSG_END_SEQ)) {
-				System.out.print("READING: " + messageBuilder.toString());
-				ircClient.feed(messageBuilder.toString());
-				messageBuilder = new StringBuilder();
+			byteBuffer[index++] = b;
+			if (index >= 2 && byteBuffer[index - 2] == MSG_END_SEQ.charAt(0)
+					&& byteBuffer[index - 1] == MSG_END_SEQ.charAt(1)) {
+				String message = new String(byteBuffer, 0, index, charset);
+				System.out.print("READING: " + message);
+				ircClient.feed(message);
+				byteBuffer = new byte[MSG_MAX_SIZE];
+				index = 0;
 			}
 		}
 	}

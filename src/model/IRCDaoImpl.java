@@ -40,6 +40,15 @@ public class IRCDaoImpl implements IRCDao {
 	}
 
 	@Override
+	public IRCUser getOrAddUser(String userName) {
+		IRCUser user = getUser(userName);
+		if (user == null) {
+			user = addUser(userName);
+		}
+		return user;
+	}
+
+	@Override
 	public boolean hasUser(String userName) {
 		return getUser(userName) != null;
 	}

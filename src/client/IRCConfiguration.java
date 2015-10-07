@@ -1,5 +1,7 @@
 package client;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class IRCConfiguration {
 	private static final String DEFAULT_NICKNAME = "IrcClient";
 	private static final String DEFAULT_USERNAME = "IrcClient";
 	private static final String DEFAULT_REALNAME = "IrcClient 1.0 developed by Tomas Colloca :)";
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private String server;
 	private boolean isMultiThread;
@@ -19,13 +22,14 @@ public class IRCConfiguration {
 	private String realname;
 	private List<String> channels;
 	private List<String> passwords;
+	private Charset charset;
 	private List<IRCEventListener> listeners;
 
 	/**
 	 * @param server
-	 * Server to connect to.
+	 *            Server to connect to.
 	 * @throws IllegalArgumentException
-	 * If server is null.
+	 *             If server is null.
 	 */
 	public IRCConfiguration(String server) {
 		if (server == null) {
@@ -38,6 +42,7 @@ public class IRCConfiguration {
 		this.realname = DEFAULT_REALNAME;
 		this.channels = new ArrayList<String>();
 		this.passwords = new ArrayList<String>();
+		this.charset = DEFAULT_CHARSET;
 		this.listeners = new ArrayList<IRCEventListener>();
 	}
 
@@ -164,6 +169,23 @@ public class IRCConfiguration {
 	}
 
 	/**
+	 * Sets the charset being used by the IRCClient. The default is UTF-8.
+	 * 
+	 * @param charset
+	 *            Charset for the IRCClient.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If charset is null.
+	 */
+	public IRCConfiguration setCharset(Charset charset) {
+		if (charset == null) {
+			throw new IllegalArgumentException();
+		}
+		this.charset = charset;
+		return this;
+	}
+
+	/**
 	 * Adds a listener for the IRCEvents dispatched by the IRCClient.
 	 * 
 	 * @param listener
@@ -210,6 +232,10 @@ public class IRCConfiguration {
 
 	List<String> getPasswords() {
 		return passwords;
+	}
+
+	Charset getCharset() {
+		return charset;
 	}
 
 	List<IRCEventListener> getListeners() {

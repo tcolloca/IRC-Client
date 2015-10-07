@@ -302,12 +302,15 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 	@Override
 	public void onCommandReply(int replyNumber, List<String> parameters) {
 		if (replyNumber == RPL_NAMREPLY) {
-			String usersList = parameters.get(2);
-			String[] usersStrings = usersList.split("" + EMPTY_SPACE);
-			initializeUsers(usersStrings);
-			// TODO : Remove
-			for (IRCUser user : users.getUsers()) {
-				System.out.println(user);
+			String channelName = parameters.get(1);
+			if (channelName.equals(this.name)) {
+				String usersList = parameters.get(2);
+				String[] usersStrings = usersList.split("" + EMPTY_SPACE);
+				initializeUsers(usersStrings);
+				// TODO : Remove
+				for (IRCUser user : users.getUsers()) {
+					System.out.println(user);
+				}
 			}
 		}
 	}

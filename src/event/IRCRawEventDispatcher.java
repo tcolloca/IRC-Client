@@ -11,9 +11,11 @@ import model.IRCUser;
 import command.event.CommandReplyEvent;
 import command.event.ConnectionReplyEvent;
 import command.event.JoinEvent;
+import command.event.MessageEvent;
 import command.event.ModeEvent;
 import command.event.NickEvent;
 import command.event.NoticeEvent;
+import command.event.PartEvent;
 import command.event.PingEvent;
 
 /**
@@ -95,6 +97,17 @@ public class IRCRawEventDispatcher implements IRCRawEventListener {
 	}
 
 	@Override
+	public void onPart(String nickname, String channelName, String message) {
+		for (int i = 0; i < listeners.size(); i++) {
+			IRCRawEventListener listener = listeners.get(i);
+			listener.onPart(nickname, channelName, message);
+		}
+		IRCUser user = dao.getUser(nickname);
+		IRCChannel channel = dao.getChannel(channelName);
+		eventDispatcher.onExecute(new PartEvent(user, channel, message));
+	}
+
+	@Override
 	public void onMode(String name, List<IRCModeAction> modeActions) {
 		for (int i = 0; i < listeners.size(); i++) {
 			IRCRawEventListener listener = listeners.get(i);
@@ -107,6 +120,21 @@ public class IRCRawEventDispatcher implements IRCRawEventListener {
 			IRCChannel channel = dao.getChannel(name);
 			eventDispatcher.onExecute(new ModeEvent(channel, modeActions));
 		}
+	}
+
+	@Override
+	public void onMessage(String sender, String msgtarget, String message) {
+		for (int i = 0; i < listeners.size(); i++) {
+			IRCRawEventListener listener = listeners.get(i);
+			listener.onMessage(sender, msgtarget, message);
+		}
+		IRCChannel channel = null;
+		if (dao.hasChannel(msgtarget)) {
+			channel = dao.getChannel(msgtarget);
+		}
+		IRCUser senderUser = dao.getOrAddUser(sender);
+		eventDispatcher
+				.onExecute(new MessageEvent(senderUser, channel, message));
 	}
 
 	@Override

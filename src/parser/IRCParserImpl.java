@@ -6,6 +6,7 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 
 	@Override
 	public IRCMessage parse(String message) {
+		//System.out.println("message: " + message.trim());
 		if (message == null || !message.endsWith(MSG_END_SEQ)) {
 			throw new IllegalArgumentException();
 		}
@@ -54,6 +55,9 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 				flag = true;
 			}
 		}
+		if (usernameBuilder.length() == 0) {
+			return null;
+		}
 		return usernameBuilder.toString();
 	}
 
@@ -72,6 +76,9 @@ public class IRCParserImpl implements IRCParser, IRCValues {
 			if (charArr[i] == HOST_INDICATOR) {
 				flag = true;
 			}
+		}
+		if (hostBuilder.length() == 0) {
+			return null;
 		}
 		return hostBuilder.toString();
 	}

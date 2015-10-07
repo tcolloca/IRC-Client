@@ -15,6 +15,19 @@ public interface IRCDao {
 	public IRCUser getUser(String userName);
 
 	/**
+	 * Returns the IRCUser that has that userName
+	 * (&lt;nickname&gt;[!&lt;username&gt;][@&lt;host&gt;]), or adds it if there
+	 * is no one.
+	 * 
+	 * @param userName
+	 * @return the IRCUser that has that userName, or adds it if there is no
+	 *         one.
+	 * @throws IllegalArgumentException
+	 *             If userName is null.
+	 */
+	public IRCUser getOrAddUser(String userName);
+
+	/**
 	 * Returns true if the client already knows the user with such userName.
 	 * 
 	 * @param userName

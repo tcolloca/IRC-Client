@@ -36,7 +36,7 @@ public class JoinCommand extends IRCCommandImpl {
 	 * @param channel
 	 *            Channel to be joined.
 	 * @throws InvalidCommandException
-	 *             If user or channel are null.
+	 *             If channel is null.
 	 */
 	public JoinCommand(IRCChannel channel) throws InvalidCommandException {
 		this(Arrays.asList(channel));

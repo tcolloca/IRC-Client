@@ -1,6 +1,5 @@
 package command;
 
-import model.IRCDao;
 import parser.IRCMessage;
 import parser.IRCMessageImpl;
 import event.IRCRawEventListener;
@@ -24,7 +23,7 @@ public class NickCommand extends IRCCommandImpl {
 	 * @param nickname
 	 *            Nickname to be used from now onwards.
 	 * @throws InvalidCommandException
-	 *             If nickname are null.
+	 *             If nickname is null.
 	 */
 	public NickCommand(String nickname) throws InvalidCommandException {
 		super(new IRCMessageImpl(NICK_COMMAND, nickname));
@@ -33,8 +32,7 @@ public class NickCommand extends IRCCommandImpl {
 		}
 	}
 
-	public NickCommand(IRCDao dao, IRCMessage ircMessage)
-			throws InvalidCommandException {
+	public NickCommand(IRCMessage ircMessage) throws InvalidCommandException {
 		super(ircMessage);
 		prevNickname = ircMessage.getPrefix().getString();
 		newNickname = ircMessage.getParameter(NICK_INDEX);

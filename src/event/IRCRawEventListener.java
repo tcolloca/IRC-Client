@@ -52,6 +52,21 @@ public interface IRCRawEventListener {
 	public void onJoin(String nickname, String channelName);
 
 	/**
+	 * This method is called when the user with that nickname leaves the channel
+	 * with that channelName with optional an message.
+	 * 
+	 * @param nickname
+	 *            Nickname of the user that leaves the channel.
+	 * @param channel
+	 *            Name of the channel being left by the user.
+	 * @param message
+	 *            Optional message written by the user that is leaving.
+	 * @throws {@link IllegalArgumentException} If any of the arguments except
+	 *         message is null.
+	 */
+	public void onPart(String nickname, String channelName, String message);
+
+	/**
 	 * This method is called when the modes of an user or channel have been
 	 * changed.
 	 * 
@@ -63,6 +78,21 @@ public interface IRCRawEventListener {
 	 * @throws {@link IllegalArgumentException} If any of the arguments is null.
 	 */
 	public void onMode(String name, List<IRCModeAction> modeActions);
+
+	/**
+	 * This method is called when a message has been sent.
+	 * 
+	 * @param sender
+	 *            Sender of the message.
+	 * @param msgtarget
+	 *            Target of the message. Either the client or any of its
+	 *            channels.
+	 * @param message
+	 *            Message being sent.
+	 * @throws IllegalArgumentException
+	 *             If any of the arguments is null.
+	 */
+	public void onMessage(String sender, String msgtarget, String message);
 
 	/**
 	 * This method is called when the server replies with a connection related

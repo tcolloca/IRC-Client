@@ -3,12 +3,26 @@ package writer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import util.IRCException;
 
 public class IRCWriterImpl implements IRCWriter {
 
 	private static final int BUFFER_SIZE = 512;
+
+	private Charset charset;
+
+	/**
+	 * @param charset
+	 *            Charset of the messages being written.
+	 * @throws IllegalArgumentException
+	 *             If charset is null.
+	 */
+	public IRCWriterImpl(Charset charset) {
+		this.charset = charset;
+	}
 
 	@Override
 	public synchronized void write(SocketChannel channel, String message)
@@ -17,15 +31,15 @@ public class IRCWriterImpl implements IRCWriter {
 			throw new IllegalArgumentException();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-		byte[] byteArr = message.getBytes();
+		byte[] byteArr = message.getBytes(charset);
 		int bytesRead = 0, bytesToBeRead;
-		while (bytesRead < message.length()) {
-			bytesToBeRead = Math.min(buffer.capacity(), message.length()
+		while (bytesRead < byteArr.length) {
+			bytesToBeRead = Math.min(buffer.capacity(), byteArr.length
 					- bytesRead);
 			buffer.put(byteArr, bytesRead, bytesToBeRead);
 			bytesRead += bytesToBeRead;
 			buffer.flip();
-			if (bytesRead < message.length()) {
+			if (bytesRead < byteArr.length) {
 				buffer.compact();
 			}
 			printBuffer(buffer);
@@ -46,11 +60,12 @@ public class IRCWriterImpl implements IRCWriter {
 	}
 
 	private void printBuffer(ByteBuffer buffer) {
-		char[] arr = new char[buffer.remaining()];
+		byte[] arr = new byte[buffer.remaining()];
 		byte[] buffArr = buffer.array();
 		for (int i = 0; i < arr.length; i++) {
-			arr[i] = (char) buffArr[i];
+			arr[i] = buffArr[i];
 		}
-		System.out.print("SENDING: " + new String(arr));
+		System.out.print("SENDING: "
+				+ new String(arr, 0, arr.length, StandardCharsets.UTF_8));
 	}
 }

@@ -3,6 +3,7 @@ package util;
 public interface IRCValues {
 
 	public static final String MSG_END_SEQ = "\r\n";
+	public static final int MSG_MAX_SIZE = 512;
 
 	public static final char PREFIX_INDICATOR = ':';
 	public static final char EMPTY_SPACE = ' ';
@@ -10,7 +11,7 @@ public interface IRCValues {
 	public static final char HOST_INDICATOR = '@';
 	public static final char TRAILING_INDICATOR = ':';
 	public static final char IN_PARAM_SEPARATOR = ',';
-	
+
 	public static final char HALFOP_CHAR = '%';
 	public static final char OP_CHAR = '@';
 	public static final char SUPEROP_CHAR = '&';
