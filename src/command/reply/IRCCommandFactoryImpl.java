@@ -1,12 +1,14 @@
-package command;
+package command.reply;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import command.IRCCommand;
+import command.InvalidCommandException;
 import parser.IRCMessage;
 import util.IRCFrameworkErrorException;
 
-public class IRCCommandFactoryImpl implements IRCCommandFactory {
+public class IRCCommandFactoryImpl implements IRCReplyFactory {
 
 	private static final String NUMERIC_RESPONSE = "\\d\\d\\d";
 	private static final String COMMAND = "Command";

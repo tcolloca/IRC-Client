@@ -24,14 +24,14 @@ import writer.IRCWriter;
 import writer.IRCWriterImpl;
 
 import command.IRCCommand;
-import command.IRCCommandFactory;
-import command.IRCCommandFactoryImpl;
 import command.InvalidCommandException;
 import command.JoinCommand;
 import command.NickCommand;
 import command.PassCommand;
 import command.PongCommand;
 import command.UserCommand;
+import command.reply.IRCCommandFactoryImpl;
+import command.reply.IRCReplyFactory;
 
 import event.IRCEventDispatcher;
 import event.IRCEventDispatcherMultiThread;
@@ -55,7 +55,7 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	private IRCReader reader;
 	private IRCWriter writer;
 	private IRCParser parser;
-	private IRCCommandFactory commandFactory;
+	private IRCReplyFactory commandFactory;
 	private IRCRawEventDispatcher rawEventDispatcher;
 	private IRCEventDispatcher eventDispatcher;
 	private IRCDao dao;
@@ -143,6 +143,15 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	}
 
 	@Override
+	public IRCUser getOrAddUser(String userName) {
+		IRCUser user = dao.getUser(userName);
+		if (user == null) {
+			user = dao.addUser(userName);
+		}
+		return user;
+	}
+
+	@Override
 	public void onPing(String server) {
 		if (server == null) {
 			throw new IllegalArgumentException();
@@ -159,10 +168,7 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 		if (nickname == null || channelName == null) {
 			throw new IllegalArgumentException();
 		}
-		IRCUser user = dao.getUser(nickname);
-		if (user == null) {
-			user = dao.addUser(nickname);
-		}
+		getOrAddUser(nickname);
 		IRCChannel channel = dao.getChannel(channelName);
 		if (channel == null) {
 			channel = dao.addChannel(channelName);
@@ -265,8 +271,8 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	public static void main(String[] args) throws IOException, IRCException,
 			InterruptedException {
 		IRCClient client = new IRCClientImpl((new IRCConfiguration(
-				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"))
-				.setNickname("TomBot"));
+				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"),
+				Arrays.asList("lalala")).setNickname("TomBot"));
 		client.run();
 	}
 }

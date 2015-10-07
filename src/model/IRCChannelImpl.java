@@ -1,6 +1,8 @@
 package model;
 
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import util.IRCCommandReplyValues;
 import util.IRCValues;
@@ -11,6 +13,8 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 		IRCValues, IRCCommandReplyValues {
 
 	private IRCClient client;
+
+	private ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	private String name;
 	private String key;
@@ -66,93 +70,184 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 
 	@Override
 	public String getKey() {
-		return key;
+		rwlock.readLock().lock();
+		try {
+			return key;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public IRCTopic getTopic() {
-		return topic;
+		rwlock.readLock().lock();
+		try {
+			return topic;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public long getCreationTime() {
-		return creationTime;
+		rwlock.readLock().lock();
+		try {
+			return creationTime;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public int getLimit() {
-		return limit;
+		rwlock.readLock().lock();
+		try {
+			return limit;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public IRCFloodLimit getFloodLimit() {
-		return floodLimit;
+		rwlock.readLock().lock();
+		try {
+			return floodLimit;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public IRCChannelUsers getChannelUsers() {
-		return users;
+		rwlock.readLock().lock();
+		try {
+			return users;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public IRCChannelModes getChannelModes() {
-		return modes;
+		rwlock.readLock().lock();
+		try {
+			return modes;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public IRCChannelMasks getChannelMasks() {
-		return masks;
+		rwlock.readLock().lock();
+		try {
+			return masks;
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean hasKey() {
-		return modes.getChannelModes().contains(IRCChannelMode.KEY);
+		rwlock.readLock().lock();
+		try {
+			return modes.getChannelModes().contains(IRCChannelMode.KEY);
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean hasLimit() {
-		return modes.getChannelModes().contains(IRCChannelMode.USERS_LIMIT);
+		rwlock.readLock().lock();
+		try {
+			return modes.getChannelModes().contains(IRCChannelMode.USERS_LIMIT);
+		} finally {
+			rwlock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public void setKey(String key) {
-		modes.setChannelMode(IRCChannelMode.KEY, key);
+		rwlock.writeLock().lock();
+		try {
+			modes.setChannelMode(IRCChannelMode.KEY, key);
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void setTopic(String message) {
-		// TODO : Set topic
+		rwlock.writeLock().lock();
+		try {
+			// TODO : Set topic
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void setLimit(int limit) {
-		modes.setChannelMode(IRCChannelMode.USERS_LIMIT, String.valueOf(limit));
+		rwlock.writeLock().lock();
+		try {
+			modes.setChannelMode(IRCChannelMode.USERS_LIMIT,
+					String.valueOf(limit));
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void setFloodLimit(IRCFloodLimit floodLimit) {
-		modes.setChannelMode(IRCChannelMode.FLOOD_LIMIT, floodLimit.getString());
+		rwlock.writeLock().lock();
+		try {
+			modes.setChannelMode(IRCChannelMode.FLOOD_LIMIT,
+					floodLimit.getString());
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void removeKey() {
-		modes.unsetChannelMode(IRCChannelMode.KEY, key);
+		rwlock.writeLock().lock();
+		try {
+			modes.unsetChannelMode(IRCChannelMode.KEY, key);
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void removeTopic() {
-		// TODO : Remove topic
-
+		rwlock.writeLock().lock();
+		try {
+			// TODO : Remove topic
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void removeLimit() {
-		modes.unsetChannelMode(IRCChannelMode.USERS_LIMIT);
+		rwlock.writeLock().lock();
+		try {
+			modes.unsetChannelMode(IRCChannelMode.USERS_LIMIT);
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void removeFloodLimit() {
-		modes.unsetChannelMode(IRCChannelMode.FLOOD_LIMIT);
+		rwlock.writeLock().lock();
+		try {
+			modes.unsetChannelMode(IRCChannelMode.FLOOD_LIMIT);
+		} finally {
+			rwlock.writeLock().unlock();
+		}
 	}
 
 	@Override
@@ -191,60 +286,80 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 			throw new IllegalArgumentException();
 		}
 		if (channelName.equals(getName()) && users.getNormalUsers() != null) {
-			users.addNormalUser(client.getUser(nickname));
+			rwlock.writeLock().lock();
+			try {
+				users.addNormalUser(client.getOrAddUser(nickname));
+			} finally {
+				rwlock.writeLock().unlock();
+			}
+		}
+		// TODO : Remove
+		for (IRCUser user : users.getUsers()) {
+			System.out.println(user);
 		}
 	}
 
 	@Override
 	public void onCommandReply(int replyNumber, List<String> parameters) {
 		if (replyNumber == RPL_NAMREPLY) {
-			System.out.println(parameters.get(0));
+			String usersList = parameters.get(2);
+			String[] usersStrings = usersList.split("" + EMPTY_SPACE);
+			initializeUsers(usersStrings);
+			// TODO : Remove
+			for (IRCUser user : users.getUsers()) {
+				System.out.println(user);
+			}
 		}
 	}
 
 	@Override
-	public void onMode(String name,
-			List<IRCModeAction> modeActions) {
+	public void onMode(String name, List<IRCModeAction> modeActions) {
 		if (name == null || modeActions == null) {
 			throw new IllegalArgumentException();
 		}
 		if (name.equals(getName())) {
-			for (IRCModeAction modeAction : modeActions) {
-				if (modeAction == null) {
-					throw new IllegalArgumentException();
+			rwlock.writeLock().lock();
+			try {
+				for (IRCModeAction modeAction : modeActions) {
+					if (modeAction == null) {
+						throw new IllegalArgumentException();
+					}
+					IRCChannelMode mode = (IRCChannelMode) modeAction.getMode();
+					String[] parameters = modeAction.getParameters();
+					char action = modeAction.getAction();
+
+					switch (mode) {
+					case VOICE:
+					case HALFOP:
+					case OP:
+					case ADMIN:
+					case OWNER:
+						changeUser(mode, parameters, action);
+						break;
+					case BAN_MASK:
+					case BAN_EXCEPTION_MASK:
+					case INVITE_ONLY_MASK:
+						changeMask(mode, parameters, action);
+						break;
+					case KEY:
+						changeKey(mode, parameters, action);
+						changeMode(mode, action);
+						break;
+					case USERS_LIMIT:
+						changeLimit(mode, parameters, action);
+						changeMode(mode, action);
+						break;
+					case FLOOD_LIMIT:
+						changeFloodLimit(mode, parameters, action);
+						changeMode(mode, action);
+						break;
+					default:
+						changeMode(mode, action);
+						break;
+					}
 				}
-				IRCChannelMode mode = (IRCChannelMode) modeAction.getMode();
-				String[] parameters = modeAction.getParameters();
-				char action = modeAction.getAction();
-				switch (mode) {
-				case VOICE:
-				case HALFOP:
-				case OP:
-				case ADMIN:
-				case OWNER:
-					changeUser(mode, parameters, action);
-					break;
-				case BAN_MASK:
-				case BAN_EXCEPTION_MASK:
-				case INVITE_ONLY_MASK:
-					changeMask(mode, parameters, action);
-					break;
-				case KEY:
-					changeKey(mode, parameters, action);
-					changeMode(mode, action);
-					break;
-				case USERS_LIMIT:
-					changeLimit(mode, parameters, action);
-					changeMode(mode, action);
-					break;
-				case FLOOD_LIMIT:
-					changeFloodLimit(mode, parameters, action);
-					changeMode(mode, action);
-					break;
-				default:
-					changeMode(mode, action);
-					break;
-				}
+			} finally {
+				rwlock.writeLock().unlock();
 			}
 		}
 	}
@@ -383,6 +498,50 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 			modes.putMode(mode);
 		} else if (action == DEL) {
 			modes.deleteMode(mode);
+		}
+	}
+
+	private void initializeUsers(String[] usersStrings) {
+		rwlock.writeLock().lock();
+		try {
+			users.initialize();
+			for (String userString : usersStrings) {
+				char firstChar = userString.charAt(0);
+				IRCUser user;
+				switch (firstChar) {
+				case HALFOP_CHAR:
+					user = client.getOrAddUser(userString.substring(1,
+							userString.length()));
+					users.addHalfOpUser(user);
+					break;
+				case OP_CHAR:
+					user = client.getOrAddUser(userString.substring(1,
+							userString.length()));
+					users.addOpUser(user);
+					break;
+				case SUPEROP_CHAR:
+					user = client.getOrAddUser(userString.substring(1,
+							userString.length()));
+					users.addSuperOpUser(user);
+					break;
+				case OWNER_CHAR:
+					user = client.getOrAddUser(userString.substring(1,
+							userString.length()));
+					users.addOwnerUser(user);
+					break;
+				case VOICED_CHAR:
+					user = client.getOrAddUser(userString.substring(1,
+							userString.length()));
+					users.addVoicedUser(user);
+					break;
+				default:
+					user = client.getOrAddUser(userString);
+					users.addNormalUser(user);
+					break;
+				}
+			}
+		} finally {
+			rwlock.writeLock().unlock();
 		}
 	}
 }

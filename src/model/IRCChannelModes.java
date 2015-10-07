@@ -321,4 +321,6 @@ public interface IRCChannelModes {
 	void putMode(IRCChannelMode mode);
 
 	void deleteMode(IRCChannelMode mode);
+	
+	void initializeModes(List<IRCChannelMode> modes);
 }

@@ -2,10 +2,11 @@ package model;
 
 import java.util.List;
 
-import command.InvalidCommandException;
-import command.ModeCommand;
 import util.IRCFrameworkErrorException;
 import util.IRCValues;
+
+import command.InvalidCommandException;
+import command.ModeCommand;
 
 public class IRCChannelMasksImpl implements IRCChannelMasks, IRCValues {
 
@@ -118,7 +119,8 @@ public class IRCChannelMasksImpl implements IRCChannelMasks, IRCValues {
 		changeMask(mode, mask, DEL);
 	}
 
-	private void changeMasks(IRCChannelMode mode, List<IRCMask> masks, char action) {
+	private void changeMasks(IRCChannelMode mode, List<IRCMask> masks,
+			char action) {
 		if (masks == null) {
 			throw new IllegalArgumentException();
 		}
@@ -132,8 +134,9 @@ public class IRCChannelMasksImpl implements IRCChannelMasks, IRCValues {
 			throw new IllegalArgumentException();
 		}
 		try {
-			channel.getClient()
-					.sendCommand(new ModeCommand(channel, new IRCModeAction(mode, action, mask.getString())));
+			channel.getClient().sendCommand(
+					new ModeCommand(channel, new IRCModeAction(mode, action,
+							mask.getString())));
 		} catch (InvalidCommandException e) {
 			throw new IRCFrameworkErrorException();
 		}
@@ -167,5 +170,13 @@ public class IRCChannelMasksImpl implements IRCChannelMasks, IRCValues {
 	@Override
 	public void deleteInviteOnlyMask(IRCMask inviteOnlyMask) {
 		inviteOnlyMasks.remove(inviteOnlyMask);
+	}
+
+	@Override
+	public void initializeMasks(List<IRCMask> banMasks,
+			List<IRCMask> banExceptionMasks, List<IRCMask> inviteOnlyMasks) {
+		this.banMasks = banMasks;
+		this.banExceptionMasks = banExceptionMasks;
+		this.inviteOnlyMasks = inviteOnlyMasks;
 	}
 }

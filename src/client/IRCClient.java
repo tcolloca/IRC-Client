@@ -60,11 +60,20 @@ public interface IRCClient {
 	public void addListener(IRCEventListener listener);
 
 	/**
-	 * Returns the IRCUser with that userName.
+	 * Returns the IRCUser with that userName or null if there is no one.
 	 * 
-	 * @return the IRCUser with that userName.
+	 * @return the IRCUser with that userName or null if there is no one.
 	 * @throws IllegalArgumentException
 	 *             If userName is null.
 	 */
 	public IRCUser getUser(String userName);
+
+	/**
+	 * Returns the IRCUser with that userName or adds it if there is no one.
+	 * 
+	 * @return the IRCUser with that userName or adds it if there is no one.
+	 * @throws IllegalArgumentException
+	 *             If userName is null.
+	 */
+	public IRCUser getOrAddUser(String userName);
 }

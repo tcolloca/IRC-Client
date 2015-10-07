@@ -65,4 +65,18 @@ public interface IRCUserChannels {
 	 * @return the list of channels where the user is and has voice.
 	 */
 	public List<IRCChannel> getVoicedChannels();
+
+	void initializeNormalChannels(List<IRCChannel> channels);
+
+	void initializeHalfOpChannels(List<IRCChannel> channels);
+
+	void initializeOpChannels(List<IRCChannel> channels);
+
+	void initializeSuperOpChannels(List<IRCChannel> channels);
+
+	void initializeOwnerChannels(List<IRCChannel> channels);
+
+	void initializeVoicedChannels(List<IRCChannel> channels);
+
+	void initialize();
 }

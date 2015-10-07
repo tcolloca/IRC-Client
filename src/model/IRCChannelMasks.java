@@ -140,4 +140,7 @@ public interface IRCChannelMasks {
 	void deleteBanExceptionMask(IRCMask banExceptionMask);
 
 	void deleteInviteOnlyMask(IRCMask inviteOnlyMask);
+
+	void initializeMasks(List<IRCMask> banMasks,
+			List<IRCMask> banExceptionMasks, List<IRCMask> inviteOnlyMasks);
 }

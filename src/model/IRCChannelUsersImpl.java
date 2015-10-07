@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -158,7 +159,6 @@ public class IRCChannelUsersImpl implements IRCChannelUsers, IRCValues {
 
 	@Override
 	public void addOpUser(IRCUser user) {
-		System.out.println("adding Op");
 		ops.add(user);
 	}
 
@@ -205,5 +205,45 @@ public class IRCChannelUsersImpl implements IRCChannelUsers, IRCValues {
 	@Override
 	public void removeVoicedUser(IRCUser user) {
 		voiced.remove(user);
+	}
+
+	@Override
+	public void initializeNormalUsers(List<IRCUser> users) {
+		this.normalUsers = users;
+	}
+
+	@Override
+	public void initializeHalfOpUsers(List<IRCUser> users) {
+		this.halfops = users;
+	}
+
+	@Override
+	public void initializeOpUsers(List<IRCUser> users) {
+		this.ops = users;
+	}
+
+	@Override
+	public void initializeSuperOpUsers(List<IRCUser> users) {
+		this.superops = users;
+	}
+
+	@Override
+	public void initializeOwnerUsers(List<IRCUser> users) {
+		this.owners = users;
+	}
+
+	@Override
+	public void initializeVoicedUsers(List<IRCUser> users) {
+		this.voiced = users;
+	}
+
+	@Override
+	public void initialize() {
+		initializeNormalUsers(new ArrayList<IRCUser>());
+		initializeHalfOpUsers(new ArrayList<IRCUser>());
+		initializeOpUsers(new ArrayList<IRCUser>());
+		initializeSuperOpUsers(new ArrayList<IRCUser>());
+		initializeOwnerUsers(new ArrayList<IRCUser>());
+		initializeVoicedUsers(new ArrayList<IRCUser>());
 	}
 }

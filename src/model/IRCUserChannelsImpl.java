@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,4 +59,43 @@ public class IRCUserChannelsImpl implements IRCUserChannels {
 		return voicedChannels;
 	}
 
+	@Override
+	public void initializeNormalChannels(List<IRCChannel> channels) {
+		this.normalChannels = channels;
+	}
+
+	@Override
+	public void initializeHalfOpChannels(List<IRCChannel> channels) {
+		this.halfOpChannels = channels;
+	}
+
+	@Override
+	public void initializeOpChannels(List<IRCChannel> channels) {
+		this.opChannels = channels;
+	}
+
+	@Override
+	public void initializeSuperOpChannels(List<IRCChannel> channels) {
+		this.superOpChannels = channels;
+	}
+
+	@Override
+	public void initializeOwnerChannels(List<IRCChannel> channels) {
+		this.ownerChannels = channels;
+	}
+
+	@Override
+	public void initializeVoicedChannels(List<IRCChannel> channels) {
+		this.voicedChannels = channels;
+	}
+
+	@Override
+	public void initialize() {
+		initializeNormalChannels(new ArrayList<IRCChannel>());
+		initializeHalfOpChannels(new ArrayList<IRCChannel>());
+		initializeOpChannels(new ArrayList<IRCChannel>());
+		initializeSuperOpChannels(new ArrayList<IRCChannel>());
+		initializeOwnerChannels(new ArrayList<IRCChannel>());
+		initializeVoicedChannels(new ArrayList<IRCChannel>());
+	}
 }

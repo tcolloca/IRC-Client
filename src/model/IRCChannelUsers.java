@@ -171,4 +171,18 @@ public interface IRCChannelUsers {
 	void removeOwnerUser(IRCUser user);
 
 	void removeVoicedUser(IRCUser user);
+	
+	void initializeNormalUsers(List<IRCUser> users);
+	
+	void initializeHalfOpUsers(List<IRCUser> users);
+	
+	void initializeOpUsers(List<IRCUser> users);
+	
+	void initializeSuperOpUsers(List<IRCUser> users);
+
+	void initializeOwnerUsers(List<IRCUser> users);
+	
+	void initializeVoicedUsers(List<IRCUser> users);
+
+	void initialize();
 }
