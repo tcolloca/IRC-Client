@@ -91,6 +91,30 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	}
 
 	@Override
+	public void sendChannelMessage(IRCChannel channel, String message) {
+		if (channel == null || message == null) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			sendCommand(new PrivmsgCommand(channel.getName(), message));
+		} catch (InvalidCommandException e) {
+			throw new IRCFrameworkErrorException();
+		}
+	}
+
+	@Override
+	public void sendPrivateMessage(IRCUser user, String message) {
+		if (user == null || message == null) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			sendCommand(new PrivmsgCommand(user.getNickname(), message));
+		} catch (InvalidCommandException e) {
+			throw new IRCFrameworkErrorException();
+		}
+	}
+
+	@Override
 	public void run() throws IRCException {
 		connect(config.getServer(), PORT);
 		reader.read(channel);

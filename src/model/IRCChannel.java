@@ -5,6 +5,16 @@ import client.IRCClient;
 public interface IRCChannel {
 
 	/**
+	 * Attempts to send the message through the channel.
+	 * 
+	 * @param message
+	 *            Message to be sent.
+	 * @throws IllegalArgumentException
+	 *             If message is null.
+	 */
+	public void send(String message);
+
+	/**
 	 * Returns the channel name.
 	 * 
 	 * @return the channel name.

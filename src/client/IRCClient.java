@@ -1,5 +1,6 @@
 package client;
 
+import model.IRCChannel;
 import model.IRCUser;
 import util.IRCException;
 
@@ -18,6 +19,30 @@ public interface IRCClient {
 	 *             If some other I/O or connection error occurs.
 	 */
 	public void run() throws IRCException;
+
+	/**
+	 * Attempts to send the message through the channel.
+	 * 
+	 * @param channel
+	 *            Channel where the message is being sent.
+	 * @param message
+	 *            Message to be sent.
+	 * @throws IllegalArgumentException
+	 *             If channel or message are null.
+	 */
+	public void sendChannelMessage(IRCChannel channel, String message);
+
+	/**
+	 * Attempts to send the private message to the user.
+	 * 
+	 * @param user
+	 *            User that would received the message.
+	 * @param message
+	 *            Message to be sent.
+	 * @throws IllegalArgumentException
+	 *             If user or message are null.
+	 */
+	public void sendPrivateMessage(IRCUser user, String message);
 
 	/**
 	 * Feeds the client with a IRC message that was read.

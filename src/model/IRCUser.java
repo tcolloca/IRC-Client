@@ -3,6 +3,16 @@ package model;
 public interface IRCUser {
 
 	/**
+	 * Attempts to send a private message to the user.
+	 * 
+	 * @param message
+	 *            Message to be sent.
+	 * @throws IllegalArgumentException
+	 *             If message is null.
+	 */
+	public void send(String message);
+
+	/**
 	 * Returns the user's nickname.
 	 * 
 	 * @return the user's nickname.

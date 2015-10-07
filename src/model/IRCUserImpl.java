@@ -20,6 +20,8 @@ public class IRCUserImpl extends IRCRawEventAdapter implements IRCUser,
 	private IRCUserChannels channels;
 	private IRCUserFlags flags;
 
+	private IRCClient client;
+
 	/**
 	 * @param client
 	 *            IRCClient that has a reference to this channel.
@@ -42,6 +44,15 @@ public class IRCUserImpl extends IRCRawEventAdapter implements IRCUser,
 		channels = new IRCUserChannelsImpl();
 		flags = new IRCUserFlagsImpl();
 		client.addRawListener(this);
+		this.client = client;
+	}
+
+	@Override
+	public void send(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException();
+		}
+		client.sendPrivateMessage(this, message);
 	}
 
 	@Override

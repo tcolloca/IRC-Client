@@ -64,6 +64,14 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 	}
 
 	@Override
+	public void send(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException();
+		}
+		client.sendChannelMessage(this, message);
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
