@@ -34,7 +34,6 @@ import command.UserCommand;
 import command.reply.IRCCommandFactoryImpl;
 import command.reply.IRCReplyFactory;
 
-import event.IRCEventAdapter;
 import event.IRCEventDispatcher;
 import event.IRCEventDispatcherMultiThread;
 import event.IRCEventDispatcherSingleThread;
@@ -172,6 +171,11 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	public IRCUser getOrAddUser(String userName) {
 		return dao.getOrAddUser(userName);
 	}
+	
+	@Override
+	public List<IRCChannel> getAllChannels() {
+		return dao.getAllChannels();
+	}
 
 	@Override
 	public void onPing(String server) {
@@ -198,8 +202,8 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	}
 
 	@Override
-	public void onNick(String prevNickname, String newNickname) {
-		IRCUser user = dao.removeUser(prevNickname);
+	public void onNick(String prevFullUsername, String newNickname) {
+		IRCUser user = dao.removeUser(prevFullUsername);
 		dao.addUser(user, newNickname);
 	}
 
@@ -293,20 +297,8 @@ public class IRCClientImpl extends IRCRawEventAdapter implements IRCClient,
 	public static void main(String[] args) throws IOException, IRCException,
 			InterruptedException {
 		IRCClient client = new IRCClientImpl((new IRCConfiguration(
-				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"),
-				Arrays.asList("lalala")).setNickname("TomBot"));
-		client.addListener(new IRCEventAdapter() {
-			@Override
-			public void onMessage(IRCUser sender, String message) {
-				try {
-					client.sendCommand(new PrivmsgCommand("#guiamt", sender
-							+ " dijo: " + message));
-				} catch (InvalidCommandException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
+				"irc.mibbit.net")).setInitialChannels(Arrays.asList("#guiamt"))
+				.setNickname("tomBot"));
 		client.run();
 	}
 }

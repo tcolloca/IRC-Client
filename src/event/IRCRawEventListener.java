@@ -16,17 +16,17 @@ public interface IRCRawEventListener {
 	public void onPing(String server);
 
 	/**
-	 * This method is called when user with prevNickname has changed it's
+	 * This method is called when user with prevFullUsername has changed it's
 	 * nickname to newNickname.
 	 * 
-	 * @param prevNickname
-	 *            Nickname of the user that has changed its nickname.
+	 * @param prevFullUsername
+	 *            Full username of the user that has changed its nickname.
 	 * @param newNickname
 	 *            The new nickname of the user.
 	 * 
 	 * @throws {@link IllegalArgumentException} If any of the arguments is null.
 	 */
-	public void onNick(String prevNickname, String newNickname);
+	public void onNick(String prevFullUsername, String newNickname);
 
 	/**
 	 * This method is called when a NOTICE has been sent to a target.

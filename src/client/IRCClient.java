@@ -1,5 +1,7 @@
 package client;
 
+import java.util.List;
+
 import model.IRCChannel;
 import model.IRCUser;
 import util.IRCException;
@@ -101,4 +103,11 @@ public interface IRCClient {
 	 *             If userName is null.
 	 */
 	public IRCUser getOrAddUser(String userName);
+
+	/**
+	 * Returns a list with all the channels the IRCUser has joined.
+	 * 
+	 * @return a list with all the channels the IRCUser has joined.
+	 */
+	public List<IRCChannel> getAllChannels();
 }

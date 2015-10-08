@@ -11,7 +11,7 @@ public class IRCRawEventAdapter implements IRCRawEventListener {
 	}
 
 	@Override
-	public void onNick(String prevNickname, String newNickname) {
+	public void onNick(String prevFullUsername, String newNickname) {
 	}
 
 	@Override

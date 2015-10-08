@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public interface IRCDao {
 
 	/**
@@ -148,4 +150,11 @@ public interface IRCDao {
 	 *             If name is null.
 	 */
 	public IRCChannel removeChannel(String name);
+
+	/**
+	 * Returns a list with all the channels the known by the dao.
+	 * 
+	 * @return a list with all the channels the known by the dao.
+	 */
+	public List<IRCChannel> getAllChannels();
 }

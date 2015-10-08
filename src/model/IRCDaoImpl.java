@@ -1,6 +1,8 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import parser.IRCParser;
@@ -77,7 +79,8 @@ public class IRCDaoImpl implements IRCDao {
 
 	@Override
 	public IRCUser removeUser(String userName) {
-		return users.remove(userName);
+		String nickname = parser.parseNickname(userName);
+		return users.remove(nickname);
 	}
 
 	@Override
@@ -120,5 +123,10 @@ public class IRCDaoImpl implements IRCDao {
 	@Override
 	public IRCChannel removeChannel(String name) {
 		return channels.remove(name);
+	}
+
+	@Override
+	public List<IRCChannel> getAllChannels() {
+		return new ArrayList<IRCChannel>(channels.values());
 	}
 }

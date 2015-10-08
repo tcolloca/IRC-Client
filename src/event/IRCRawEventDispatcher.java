@@ -66,13 +66,13 @@ public class IRCRawEventDispatcher implements IRCRawEventListener {
 	}
 
 	@Override
-	public void onNick(String prevNickname, String newNickname) {
+	public void onNick(String prevFullUsername, String newNickname) {
 		for (int i = 0; i < listeners.size(); i++) {
 			IRCRawEventListener listener = listeners.get(i);
-			listener.onNick(prevNickname, newNickname);
+			listener.onNick(prevFullUsername, newNickname);
 		}
 		IRCUser user = dao.getUser(newNickname);
-		eventDispatcher.onExecute(new NickEvent(user, prevNickname));
+		eventDispatcher.onExecute(new NickEvent(user, prevFullUsername));
 	}
 
 	@Override
