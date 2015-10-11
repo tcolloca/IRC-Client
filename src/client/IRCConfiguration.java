@@ -1,61 +1,36 @@
 package client;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 import event.IRCEventListener;
 
-public class IRCConfiguration {
-
-	private static final String DEFAULT_NICKNAME = "IrcClient";
-	private static final String DEFAULT_USERNAME = "IrcClient";
-	private static final String DEFAULT_REALNAME = "IrcClient 1.0 developed by Tomas Colloca :)";
-	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-
-	private String server;
-	private boolean isMultiThread;
-	private String nickname;
-	private String password;
-	private String username;
-	private String realname;
-	private List<String> channels;
-	private List<String> passwords;
-	private Charset charset;
-	private List<IRCEventListener> listeners;
+/**
+ * Represents the configuration of an IRCClient. Changes done with the set
+ * methods after building the client won't have effects over it.
+ * 
+ * @author Tomas
+ */
+public interface IRCConfiguration {
 
 	/**
+	 * Sets server to which the client will try to connect to.
+	 * 
 	 * @param server
-	 *            Server to connect to.
-	 * @throws IllegalArgumentException
-	 *             If server is null.
+	 *            Server to which the client will try to connect to.
+	 * @return this
 	 */
-	public IRCConfiguration(String server) {
-		if (server == null) {
-			throw new IllegalArgumentException();
-		}
-		this.server = server;
-		this.nickname = DEFAULT_NICKNAME;
-		this.password = null;
-		this.username = DEFAULT_USERNAME;
-		this.realname = DEFAULT_REALNAME;
-		this.channels = new ArrayList<String>();
-		this.passwords = new ArrayList<String>();
-		this.charset = DEFAULT_CHARSET;
-		this.listeners = new ArrayList<IRCEventListener>();
-	}
+	public IRCConfiguration setServer(String server);
 
 	/**
 	 * Sets the IRCConfiguration for a MultiThread IRCClient.
 	 * 
 	 * @param isMultiThread
+	 *            True if is client should allow event listeners run in
+	 *            different threads.
 	 * @return this
 	 */
-	public IRCConfiguration setMultiThread(boolean isMultiThread) {
-		this.isMultiThread = isMultiThread;
-		return this;
-	}
+	public IRCConfiguration setMultiThread(boolean isMultiThread);
 
 	/**
 	 * Sets the nickname of the IRCClient.
@@ -66,13 +41,7 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If nickname is null or empty.
 	 */
-	public IRCConfiguration setNickname(String nickname) {
-		if (nickname == null || nickname.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.nickname = nickname;
-		return this;
-	}
+	public IRCConfiguration setNickname(String nickname);
 
 	/**
 	 * Sets the password for the nickname of the IRCClient.
@@ -83,13 +52,7 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If password is null or empty.
 	 */
-	public IRCConfiguration setPassword(String password) {
-		if (password == null || password.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.password = password;
-		return this;
-	}
+	public IRCConfiguration setPassword(String password);
 
 	/**
 	 * Sets the username of the IRCClient.
@@ -100,13 +63,7 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If username is null or empty.
 	 */
-	public IRCConfiguration setUsername(String username) {
-		if (username == null || username.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.username = username;
-		return this;
-	}
+	public IRCConfiguration setUsername(String username);
 
 	/**
 	 * Sets the realname of the IRCClient.
@@ -117,13 +74,7 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If realname is null or empty.
 	 */
-	public IRCConfiguration setRealname(String realname) {
-		if (realname == null || realname.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.realname = realname;
-		return this;
-	}
+	public IRCConfiguration setRealname(String realname);
 
 	/**
 	 * Sets the initial channels of the IRCClient.
@@ -134,9 +85,7 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If channels or any channel is null.
 	 */
-	public IRCConfiguration setInitialChannels(List<String> channels) {
-		return setInitialChannels(channels, null);
-	}
+	public IRCConfiguration setInitialChannels(List<String> channels);
 
 	/**
 	 * Sets the initial channels of the IRCClient.
@@ -151,25 +100,10 @@ public class IRCConfiguration {
 	 *             different to passwords size.
 	 */
 	public IRCConfiguration setInitialChannels(List<String> channels,
-			List<String> passwords) {
-		if (channels == null) {
-			throw new IllegalArgumentException();
-		}
-		for (String channelName : channels) {
-			if (channelName == null) {
-				throw new IllegalArgumentException();
-			}
-		}
-		if (passwords != null && channels.size() != passwords.size()) {
-			throw new IllegalArgumentException();
-		}
-		this.channels = channels;
-		this.passwords = passwords;
-		return this;
-	}
+			List<String> passwords);
 
 	/**
-	 * Sets the charset being used by the IRCClient. The default is UTF-8.
+	 * Sets the charset being used by the IRCClient.
 	 * 
 	 * @param charset
 	 *            Charset for the IRCClient.
@@ -177,13 +111,40 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If charset is null.
 	 */
-	public IRCConfiguration setCharset(Charset charset) {
-		if (charset == null) {
-			throw new IllegalArgumentException();
-		}
-		this.charset = charset;
-		return this;
-	}
+	public IRCConfiguration setCharset(Charset charset);
+
+	/**
+	 * Sets the connection handler that will be used by the IRClient.
+	 * 
+	 * @param handler
+	 *            Connection handler that will be used by the IRClient.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If handler is null.
+	 */
+	public IRCConfiguration setConnectionHandler(IRCConnectionHandler handler);
+
+	/**
+	 * Sets the reader that will be used by the IRClient.
+	 * 
+	 * @param reader
+	 *            Reader that will be used by the IRClient.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If reader is null.
+	 */
+	public IRCConfiguration setReader(IRCReader reader);
+
+	/**
+	 * Sets the writer that will be used by the IRClient.
+	 * 
+	 * @param writer
+	 *            Writer that will be used by the IRClient.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If writer is null.
+	 */
+	public IRCConfiguration setWriter(IRCWriter writer);
 
 	/**
 	 * Adds a listener for the IRCEvents dispatched by the IRCClient.
@@ -194,51 +155,116 @@ public class IRCConfiguration {
 	 * @throws IllegalArgumentException
 	 *             If listener is null.
 	 */
-	public IRCConfiguration addListener(IRCEventListener listener) {
-		if (listener == null) {
-			throw new IllegalArgumentException();
-		}
-		listeners.add(listener);
-		return this;
-	}
+	public IRCConfiguration addListener(IRCEventListener listener);
 
-	String getServer() {
-		return server;
-	}
+	/**
+	 * Removes the listener from list of listeners that will listen to the
+	 * IRCEvents dispatched by the IRCClient.
+	 * 
+	 * @param listener
+	 *            Listener to be removed.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If listener is null.
+	 */
+	public IRCConfiguration removeListener(IRCEventListener listener);
 
-	boolean isMultiThread() {
-		return isMultiThread;
-	}
+	/**
+	 * Returns the server to which the client will try/has tried to connect.
+	 * 
+	 * @return the server to which the client will try/has tried to connect.
+	 */
+	public String getServer();
 
-	String getNickname() {
-		return nickname;
-	}
+	/**
+	 * Returns if the eventListeners are handled in different threads.
+	 * 
+	 * @return if the eventListeners are handled in different threads.
+	 */
+	public boolean isMultiThread();
 
-	String getPassword() {
-		return password;
-	}
+	/**
+	 * Returns the nickname which the client will try/has tried to use to
+	 * connect.
+	 * 
+	 * @return the nickname which the client will try/has tried to use to
+	 *         connect.
+	 */
+	public String getNickname();
 
-	String getUsername() {
-		return username;
-	}
+	/**
+	 * Returns the password which the client will use/has used to connect.
+	 * 
+	 * @return the password which the client will use/has used to connect.
+	 */
+	public String getPassword();
 
-	String getRealname() {
-		return realname;
-	}
+	/**
+	 * Returns the username which the client will use/has used to connect.
+	 * 
+	 * @return the username which the client will use/has used to connect.
+	 */
+	public String getUsername();
 
-	List<String> getChannels() {
-		return channels;
-	}
+	/**
+	 * Returns the realname which the client will use/has used to connect.
+	 * 
+	 * @return the realname which the client will use/has used to connect.
+	 */
+	public String getRealname();
 
-	List<String> getPasswords() {
-		return passwords;
-	}
+	/**
+	 * Returns the name of the channels which the client will try/has tried to
+	 * join.
+	 * 
+	 * @return the name of the channels which the client will try/has tried to
+	 *         join.
+	 */
+	public List<String> getChannelNames();
 
-	Charset getCharset() {
-		return charset;
-	}
+	/**
+	 * Returns the passwords which the client will use/has used to try to join
+	 * the channels.
+	 * 
+	 * @return the passwords which the client will use/has used to try to join
+	 *         the channels.
+	 */
+	public List<String> getChannelPasswords();
 
-	List<IRCEventListener> getListeners() {
-		return listeners;
-	}
+	/**
+	 * Returns the charset that will be used/is being used by the client.
+	 * 
+	 * @return the charset that will be used/is being used by the client.
+	 */
+	public Charset getCharset();
+
+	/**
+	 * Returns the connection handler that will be used/is being used by the
+	 * client.
+	 * 
+	 * @return the connection handler that will be used/is being used by the
+	 *         client.
+	 */
+	public IRCConnectionHandler getConnectionHandler();
+
+	/**
+	 * Returns the reader that will be used/is being used by the client.
+	 * 
+	 * @return the reader that will be used/is being used by the client.
+	 */
+	public IRCReader getReader();
+
+	/**
+	 * Returns the writer that will be used/is being used by the client.
+	 * 
+	 * @return the writer that will be used/is being used by the client.
+	 */
+	public IRCWriter getWriter();
+
+	/**
+	 * Returns the listeners subscribed to the IRCEvents thrown by the client.
+	 * 
+	 * @return the listeners subscribed to the IRCEvents thrown by the client.
+	 */
+	public List<IRCEventListener> getListeners();
 }

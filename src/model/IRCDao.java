@@ -1,6 +1,6 @@
 package model;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IRCDao {
 
@@ -77,6 +77,13 @@ public interface IRCDao {
 	 *             If userName is null.
 	 */
 	public IRCUser removeUser(String userName);
+	
+	/**
+	 * Returns a set with all the users the known by the dao.
+	 * 
+	 * @return a set with all the users the known by the dao.
+	 */
+	public Set<IRCUser> getAllUsers();
 
 	/**
 	 * Returns the channel with that name, and null if there is no one.
@@ -150,11 +157,11 @@ public interface IRCDao {
 	 *             If name is null.
 	 */
 	public IRCChannel removeChannel(String name);
-
+	
 	/**
-	 * Returns a list with all the channels the known by the dao.
+	 * Returns a set with all the channels the known by the dao.
 	 * 
-	 * @return a list with all the channels the known by the dao.
+	 * @return a set with all the channels the known by the dao.
 	 */
-	public List<IRCChannel> getAllChannels();
+	public Set<IRCChannel> getAllChannels();
 }

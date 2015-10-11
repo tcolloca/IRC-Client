@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import util.IRCCommandReplyValues;
 import util.IRCValues;
 import client.IRCClient;
+import client.IRCClientImpl;
 import event.IRCRawEventAdapter;
 
 public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
@@ -60,7 +61,7 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 		this.users = new IRCChannelUsersImpl(this);
 		this.modes = new IRCChannelModesImpl(this);
 		this.masks = new IRCChannelMasksImpl(this);
-		client.addRawListener(this);
+		((IRCClientImpl) client).addRawListener(this);
 	}
 
 	@Override
@@ -296,7 +297,8 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 		if (channelName.equals(getName()) && users.getNormalUsers() != null) {
 			rwlock.writeLock().lock();
 			try {
-				users.addNormalUser(client.getOrAddUser(nickname));
+				users.addNormalUser(((IRCClientImpl) client)
+						.getOrAddUser(nickname));
 			} finally {
 				rwlock.writeLock().unlock();
 			}
@@ -519,34 +521,35 @@ public class IRCChannelImpl extends IRCRawEventAdapter implements IRCChannel,
 			for (String userString : usersStrings) {
 				char firstChar = userString.charAt(0);
 				IRCUser user;
+				IRCClientImpl clientImpl = (IRCClientImpl) client;
 				switch (firstChar) {
 				case HALFOP_CHAR:
-					user = client.getOrAddUser(userString.substring(1,
+					user = clientImpl.getOrAddUser(userString.substring(1,
 							userString.length()));
 					users.addHalfOpUser(user);
 					break;
 				case OP_CHAR:
-					user = client.getOrAddUser(userString.substring(1,
+					user = clientImpl.getOrAddUser(userString.substring(1,
 							userString.length()));
 					users.addOpUser(user);
 					break;
 				case SUPEROP_CHAR:
-					user = client.getOrAddUser(userString.substring(1,
+					user = clientImpl.getOrAddUser(userString.substring(1,
 							userString.length()));
 					users.addSuperOpUser(user);
 					break;
 				case OWNER_CHAR:
-					user = client.getOrAddUser(userString.substring(1,
+					user = clientImpl.getOrAddUser(userString.substring(1,
 							userString.length()));
 					users.addOwnerUser(user);
 					break;
 				case VOICED_CHAR:
-					user = client.getOrAddUser(userString.substring(1,
+					user = clientImpl.getOrAddUser(userString.substring(1,
 							userString.length()));
 					users.addVoicedUser(user);
 					break;
 				default:
-					user = client.getOrAddUser(userString);
+					user = clientImpl.getOrAddUser(userString);
 					users.addNormalUser(user);
 					break;
 				}

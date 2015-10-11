@@ -1,15 +1,13 @@
 package client;
 
 import java.util.List;
+import java.util.Set;
 
+import util.IRCConnectionException;
 import model.IRCChannel;
 import model.IRCUser;
-import util.IRCException;
-
 import command.IRCCommand;
-
 import event.IRCEventListener;
-import event.IRCRawEventListener;
 
 public interface IRCClient {
 
@@ -17,10 +15,94 @@ public interface IRCClient {
 	 * Connects to the server and then it occupies of the connection, reading
 	 * and sending messages.
 	 * 
-	 * @throws IRCException
-	 *             If some other I/O or connection error occurs.
+	 * @throws IRCConnectionException
+	 *             If any connection error occurs.
 	 */
-	public void run() throws IRCException;
+	public void run() throws IRCConnectionException;
+
+	/**
+	 * Stops the client from executing.
+	 */
+	public void stop();
+
+	/**
+	 * Stops the client from executing with the message received.
+	 * 
+	 * @param message
+	 *            Message to show as quit message.
+	 * @throws IllegalArgumentException
+	 *             If message is null.
+	 */
+	public void stop(String message);
+
+	/**
+	 * Attempts to joins the channel with the received name. Ignores it if
+	 * already joined.
+	 * 
+	 * @param channelName
+	 *            Name of the channel to be joined.
+	 * @throws IllegalArgumentException
+	 *             If channelName is null.
+	 */
+	public void join(String channelName);
+
+	/**
+	 * Attempts to joins the channel with the received name and password.
+	 * Ignores it if already joined.
+	 * 
+	 * @param channelName
+	 *            Name of the channel to be joined.
+	 * @param password
+	 *            Password of the channelName.
+	 * @throws IllegalArgumentException
+	 *             If channelName is null.
+	 */
+	public void join(String channelName, String password);
+
+	/**
+	 * Attempts to joins the channels with the received names. Ignores it if
+	 * already joined.
+	 * 
+	 * @param channelNames
+	 *            Names of the channels to be joined.
+	 * @throws IllegalArgumentException
+	 *             If channelNames is null or any channel name is null.
+	 */
+	public void join(List<String> channelNames);
+
+	/**
+	 * Attempts to joins the channels with the received names and passwords.
+	 * Ignores it if already joined. If a channel has no password it should be
+	 * null in the list.
+	 * 
+	 * @param channelNames
+	 *            Names of the channels to be joined.
+	 * @param passwords
+	 *            Passwords of the channels to be joined.
+	 * @throws IllegalArgumentException
+	 *             If channelNames or any channel name is null.
+	 */
+	public void join(List<String> channelNames, List<String> passwords);
+
+	/**
+	 * Leaves the channel received. Ignores it if the client is not on it.
+	 * 
+	 * @param channel
+	 *            Channel to be left.
+	 * @throws IllegalArgumentException
+	 *             If channel is null.
+	 */
+	public void leave(IRCChannel channel);
+
+	/**
+	 * Attempts to change the nick of the client to newNick.
+	 * 
+	 * @param newNick
+	 *            New nick of the client.
+	 * @throws IllegalArgumentException
+	 *             If newNick is null.
+	 */
+	public void setNickname(String newNick);
 
 	/**
 	 * Attempts to send the message through the channel.
@@ -47,16 +129,6 @@ public interface IRCClient {
 	public void sendPrivateMessage(IRCUser user, String message);
 
 	/**
-	 * Feeds the client with a IRC message that was read.
-	 * 
-	 * @param message
-	 *            Message that has been read.
-	 * @throws IllegalArgumentException
-	 *             If message is null.
-	 */
-	public void feed(String message);
-
-	/**
 	 * Sends the command to the server.
 	 * 
 	 * @param command
@@ -65,26 +137,19 @@ public interface IRCClient {
 	public void sendCommand(IRCCommand command);
 
 	/**
-	 * Adds a listener for the raw IRC events dispatched by the IRCClient.
+	 * Sends the raw IRC message through the connection.
 	 * 
-	 * @param listener
-	 *            Listener to be added.
-	 * @return this
-	 * @throws IllegalArgumentException
-	 *             If listener is null.
+	 * @param message
+	 *            Message to be sent.
 	 */
-	public void addRawListener(IRCRawEventListener listener);
+	public void sendRawLine(String message);
 
 	/**
-	 * Adds a listener for the IRC events dispatched by the IRCClient.
+	 * Returns the IRCUser that represents the client.
 	 * 
-	 * @param listener
-	 *            Listener to be added.
-	 * @return this
-	 * @throws IllegalArgumentException
-	 *             If listener is null.
+	 * @return the IRCUser that represents the client.
 	 */
-	public void addListener(IRCEventListener listener);
+	public IRCUser getClientUser();
 
 	/**
 	 * Returns the IRCUser with that userName or null if there is no one.
@@ -96,18 +161,52 @@ public interface IRCClient {
 	public IRCUser getUser(String userName);
 
 	/**
-	 * Returns the IRCUser with that userName or adds it if there is no one.
+	 * Returns the IRCChannel with that name if known to the client, or null if
+	 * not.
 	 * 
-	 * @return the IRCUser with that userName or adds it if there is no one.
+	 * @return the IRCChannel with that name if known to the client, or null if
+	 *         not.
 	 * @throws IllegalArgumentException
-	 *             If userName is null.
+	 *             If channelName is null.
 	 */
-	public IRCUser getOrAddUser(String userName);
+	public IRCChannel getChannel(String channelName);
 
 	/**
-	 * Returns a list with all the channels the IRCUser has joined.
+	 * Returns a set with all the users known by the client.
 	 * 
-	 * @return a list with all the channels the IRCUser has joined.
+	 * @return a set with all the users known by the client.
 	 */
-	public List<IRCChannel> getAllChannels();
+	public Set<IRCUser> getAllUsers();
+
+	/**
+	 * Returns a set with all the channels known by the client.
+	 * 
+	 * @return a set with all the channels known by the client.
+	 */
+	public Set<IRCChannel> getAllChannels();
+
+	/**
+	 * Returns the nick of the client.
+	 * 
+	 * @return the nick of the client.
+	 */
+	public String getNick();
+
+	/**
+	 * Returns the configuration of the client.
+	 * 
+	 * @return the configuration of the client.
+	 */
+	public IRCConfiguration getConfiguration();
+
+	/**
+	 * Adds a listener for the IRC events dispatched by the IRCClient.
+	 * 
+	 * @param listener
+	 *            Listener to be added.
+	 * @return this
+	 * @throws IllegalArgumentException
+	 *             If listener is null.
+	 */
+	public void addListener(IRCEventListener listener);
 }

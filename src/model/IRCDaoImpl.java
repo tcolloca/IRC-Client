@@ -1,9 +1,9 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import parser.IRCParser;
 import client.IRCClient;
@@ -84,6 +84,11 @@ public class IRCDaoImpl implements IRCDao {
 	}
 
 	@Override
+	public Set<IRCUser> getAllUsers() {
+		return new HashSet<IRCUser>(users.values());
+	}
+
+	@Override
 	public IRCChannel getChannel(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException();
@@ -126,7 +131,7 @@ public class IRCDaoImpl implements IRCDao {
 	}
 
 	@Override
-	public List<IRCChannel> getAllChannels() {
-		return new ArrayList<IRCChannel>(channels.values());
+	public Set<IRCChannel> getAllChannels() {
+		return new HashSet<IRCChannel>(channels.values());
 	}
 }

@@ -1,5 +1,7 @@
 package client;
 
-public class IRCClientUser {
+import model.IRCUser;
+
+public interface IRCClientUser extends IRCUser {
 
 }

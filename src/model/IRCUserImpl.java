@@ -2,6 +2,7 @@ package model;
 
 import util.IRCValues;
 import client.IRCClient;
+import client.IRCClientImpl;
 import event.IRCRawEventAdapter;
 
 public class IRCUserImpl extends IRCRawEventAdapter implements IRCUser,
@@ -43,7 +44,7 @@ public class IRCUserImpl extends IRCRawEventAdapter implements IRCUser,
 		idleTime = -1;
 		channels = new IRCUserChannelsImpl();
 		flags = new IRCUserFlagsImpl();
-		client.addRawListener(this);
+		((IRCClientImpl) client).addRawListener(this);
 		this.client = client;
 	}
 

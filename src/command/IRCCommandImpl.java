@@ -13,10 +13,8 @@ public abstract class IRCCommandImpl implements IRCCommand, IRCValues {
 	 * @param ircMessage
 	 * @throws IllegalArgumentException
 	 *             If iRCMessage is null.
-	 * @throws InvalidCommandException
-	 *             If the command can't be constructed from the ircMessage.
 	 */
-	IRCCommandImpl(IRCMessage ircMessage) throws InvalidCommandException {
+	IRCCommandImpl(IRCMessage ircMessage) {
 		if (ircMessage == null) {
 			throw new IllegalArgumentException();
 		}
